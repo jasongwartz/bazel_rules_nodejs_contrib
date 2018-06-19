@@ -1,0 +1,12 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+nodejs_binary(
+    name = "json_to_js",
+    entry_point = "__main__/tools/rules/json_to_js/parser.js",
+    node_modules = "@json_to_js_deps//:node_modules",
+    data = [
+      "parser.js",
+    ]
+)

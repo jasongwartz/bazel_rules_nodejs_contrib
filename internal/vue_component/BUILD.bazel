@@ -1,0 +1,11 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+exports_files(["rollup.config.js"])
+
+nodejs_binary(
+    name = "rollup_vue",
+    entry_point = "vue_component_deps/node_modules/rollup/bin/rollup",
+    node_modules = "@vue_component_deps//:node_modules",
+)

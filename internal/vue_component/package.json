@@ -1,0 +1,8 @@
+{
+    "description": "runtime dependencies for vue_component",
+    "devDependencies": {
+        "rollup": "^0.60.4",
+        "rollup-plugin-vue": "^4.2.0",
+        "vue-template-compiler": "^2.5.16"
+    }
+}
