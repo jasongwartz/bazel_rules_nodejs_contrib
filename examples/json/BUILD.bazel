@@ -1,0 +1,8 @@
+load("//:defs.bzl", "json_to_js")
+
+json_to_js(
+  name = "json",
+  srcs = [
+    'test.json',
+  ],
+)

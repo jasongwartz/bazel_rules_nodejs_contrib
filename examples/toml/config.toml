@@ -1,0 +1,18 @@
+[[ab_tests]]
+id = "45"
+groups = ["a", "b"]
+
+[application]
+cdn = "http://production"
+debug = false
+environment = "production"
+log_level = "warn"
+port = "8080"
+
+[cache]
+cache_address = "url:6379"
+cache_lifetime = "6m"
+
+[data]
+api_url = "https://some_url.com"
+

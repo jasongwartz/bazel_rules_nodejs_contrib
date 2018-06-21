@@ -1,0 +1,9 @@
+load("//:defs.bzl", "toml_to_js")
+
+toml_to_js(
+  name = "toml",
+  srcs = [
+    "config.toml",
+    "another_config.toml",
+  ],
+)

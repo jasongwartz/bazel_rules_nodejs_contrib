@@ -1,23 +1,47 @@
+/**
+ * @license
+ * Copyright 2018 Ecosia GmbH.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 const { readFile, writeFile } = require('fs');
 const path = require('path');
 const parseToml = require('markty-toml');
 const toml = require('toml-j0.4');
 const rollup = require('rollup-pluginutils');
 const mkdirp = require('mkdirp');
-const argv = require('minimist')(process.argv.slice(2));
+const program = require('commander');
 
-const outDir = argv['out-dir'] || '';
+program
+  .version('1.0.0')
+  .usage('[options] <files...>')
+  .option('-o, --out-dir <value>', 'Output directory for created files')
+  .option('-s, --strict', 'If provided will use strict parsing')
+  .parse(process.argv);
 
-for (let i = 0; i < argv._.length; i += 1) {
-    const input = argv._[i];
-    const output = path.join(outDir, `${path.basename(input).slice(0, -4)}js`);
+const outDir = program['outDir'] || '';
+
+for (let i = 0; i < program.args.length; i += 1) {
+    const input = program.args[i];
+    const output = path.join(outDir, `${input.slice(0, -4)}js`);
     readFile(input, 'utf-8', (err, data) => {
         if (err) {
             return console.error(err);
         }
-        // markty-toml is much faster than toml-j0.4 but does not fully adhere to the toml standard
+        // markty-toml is faster than toml-j0.4 but does not fully adhere to the toml standard
         // e.g. it ignores comments
-        const parsed = argv.strict ? toml.parse(data) : parseToml(data);
+        const parsed = program.strict ? toml.parse(data) : parseToml(data);
         const esm = rollup.dataToEsm(parsed);
 
         if (outDir) {

@@ -1,5 +1,6 @@
 {
     "description": "runtime dependencies for vue_component",
+    "license": "Apache-2.0",
     "devDependencies": {
         "rollup": "^0.60.4",
         "rollup-plugin-vue": "^4.2.0",

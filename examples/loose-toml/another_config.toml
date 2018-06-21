@@ -1,0 +1,25 @@
+[[ab_tests]]
+id = "12"
+groups = ["a", "b"]
+
+[[ab_tests]]
+id = "23"
+groups = ["a", "b"]
+
+
+[application]
+# Some important note about this
+# config1 = config1
+cdn = "http://localhost"
+debug = true
+environment = "development"
+log_level = "debug"
+port = "8080"
+
+[cache]
+cache_address = "localhost:6379"
+cache_lifetime = "6m"
+
+[data]
+api_url = "https://some_url.com"
+

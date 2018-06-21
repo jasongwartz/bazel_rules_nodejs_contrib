@@ -1,8 +1,9 @@
 {
+    "license": "Apache-2.0",
     "dependencies": {
         "markty-toml": "^0.0.6",
         "rollup-pluginutils": "^2.3.0",
-        "minimist": "^1.2.0",
+        "commander": "^2.15.1",
         "mkdirp": "^0.5.1",
         "toml-j0.4": "^1.1.1"
     }

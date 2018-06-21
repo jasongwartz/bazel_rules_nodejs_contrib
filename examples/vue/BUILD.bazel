@@ -1,0 +1,6 @@
+load("//:defs.bzl", "vue_component")
+
+vue_component(
+  name = "vue",
+  src = "mycomponent.vue",
+)
