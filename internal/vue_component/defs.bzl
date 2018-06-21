@@ -52,6 +52,5 @@ vue_component = rule(
     },
     outputs = {
         "build_js": "%{name}.js",
-        # "build_css": "%{name}.css",
     },
 )
