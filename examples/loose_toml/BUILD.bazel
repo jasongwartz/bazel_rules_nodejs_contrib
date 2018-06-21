@@ -1,7 +1,7 @@
 load("//:defs.bzl", "toml_to_js")
 
 toml_to_js(
-  name = "toml",
+  name = "loose_toml",
   strict = False,
   srcs = [
     "config.toml",
