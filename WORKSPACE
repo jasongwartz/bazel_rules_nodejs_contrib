@@ -34,3 +34,10 @@ node_repositories(
 load("//:defs.bzl", "node_contrib_repositories")
 
 node_contrib_repositories()
+
+http_archive(
+    name = "pax",
+    url = "https://github.com/globegitter/pax/archive/1403cb587ad0cc8e53973d3615397f3b43d4e527.tar.gz",
+    strip_prefix = "pax-1403cb587ad0cc8e53973d3615397f3b43d4e527",
+    sha256 = "d51b74178bc97bc63a3c610b28ace25c2f28b44774e746b5f0714beebbd5959a",
+)
