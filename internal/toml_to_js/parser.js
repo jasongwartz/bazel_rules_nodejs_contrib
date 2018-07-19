@@ -34,7 +34,7 @@ const outDir = program['outDir'] || '';
 
 for (let i = 0; i < program.args.length; i += 1) {
     const input = program.args[i];
-    const output = path.join(outDir, `${input.slice(0, -4)}js`);
+    const output = path.join(outDir, `${input}.js`);
     readFile(input, 'utf-8', (err, data) => {
         if (err) {
             return console.error(err);

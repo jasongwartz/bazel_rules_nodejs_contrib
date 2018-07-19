@@ -1,0 +1,24 @@
+config_setting(
+    name = 'linux_x86',
+    constraint_values = [
+      '@bazel_tools//platforms:linux',
+      '@bazel_tools//platforms:x86_64',
+    ],
+)
+
+config_setting(
+    name = 'darwin_x86',
+    constraint_values = [
+      '@bazel_tools//platforms:osx',
+      '@bazel_tools//platforms:x86_64',
+    ],
+)
+
+filegroup(
+  name = "pax",
+  srcs = select({
+    ":linux_x86": ["@pax//linux-x86_64:pax"],
+    ":darwin_x86": ["@pax//darwin-x86_64:pax"],
+  }),
+  visibility = ["//visibility:public"],
+)

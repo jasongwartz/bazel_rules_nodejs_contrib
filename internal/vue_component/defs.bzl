@@ -14,6 +14,9 @@
 
 def _vue_component(ctx):
     config = ctx.actions.declare_file("_%s.rollup.config.js" % ctx.label.name)
+    filename = ctx.attr.out if ctx.attr.out else "%s.vue" % ctx.label.name
+    build_js = ctx.actions.declare_file("%s.js" % filename)
+    
     ctx.actions.expand_template(
         output = config,
         template =  ctx.file._rollup_config_tmpl,
@@ -24,14 +27,19 @@ def _vue_component(ctx):
     
     args = ctx.actions.args()
     args.add(["--config", config.path])
-    args.add(["--output.file", ctx.outputs.build_js.path])
+    args.add(["--output.file", build_js.path])
     args.add(["--input", ctx.file.src.path])
+    args.add(["--silent"])
     ctx.actions.run(
         executable = ctx.executable._rollup,
         inputs = [ctx.file.src, config],
-        outputs = [ctx.outputs.build_js],
+        outputs = [build_js],
         arguments = [args],
     )
+
+    return [
+        DefaultInfo(files = depset([build_js]))
+    ]
 
 vue_component = rule(
     implementation = _vue_component,
@@ -41,6 +49,9 @@ vue_component = rule(
             These can use ES2015 syntax and ES Modules (import/export)""",
             single_file = True,
             allow_files = [".vue"]),
+        "out": attr.string(
+            default = "",
+        ),
         "_rollup_config_tmpl": attr.label(
             default = Label("//internal/vue_component:rollup.config.js"),
             allow_files = True,
@@ -49,8 +60,5 @@ vue_component = rule(
             executable = True,
             cfg = "host",
             default = Label("//internal/vue_component:rollup_vue")),
-    },
-    outputs = {
-        "build_js": "%{name}.js",
     },
 )

@@ -14,6 +14,9 @@
 
 workspace(name = "ecosia_bazel_rules_nodejs_contrib")
 
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+
 http_archive(
     name = "build_bazel_rules_nodejs",
     url = "https://github.com/bazelbuild/rules_nodejs/archive/f481a1abf54b1dee887329ef1ea8a0bb1e5f2bb1.tar.gz",
@@ -37,7 +40,27 @@ node_contrib_repositories()
 
 http_archive(
     name = "pax",
-    url = "https://github.com/globegitter/pax/archive/1403cb587ad0cc8e53973d3615397f3b43d4e527.tar.gz",
-    strip_prefix = "pax-1403cb587ad0cc8e53973d3615397f3b43d4e527",
-    sha256 = "d51b74178bc97bc63a3c610b28ace25c2f28b44774e746b5f0714beebbd5959a",
+    url = "https://github.com/globegitter/pax/archive/0a71acad5091d92b8fdc8c0c135be0f4447b9749.tar.gz",
+    strip_prefix = "pax-0a71acad5091d92b8fdc8c0c135be0f4447b9749",
+    sha256 = "b168bc0ea81cde55f42b2e3028c42db9da5e2197f3bfc80365d617cc11966cee",
 )
+
+
+http_archive(
+    name = "io_bazel_rules_go",
+    urls = ["https://github.com/bazelbuild/rules_go/releases/download/0.13.0/rules_go-0.13.0.tar.gz"],
+    sha256 = "ba79c532ac400cefd1859cbc8a9829346aa69e3b99482cd5a54432092cbc3933",
+)
+
+http_archive(
+    name = "bazel_gazelle",
+    urls = ["https://github.com/bazelbuild/bazel-gazelle/releases/download/0.13.0/bazel-gazelle-0.13.0.tar.gz"],
+    sha256 = "bc653d3e058964a5a26dcad02b6c72d7d63e6bb88d94704990b908a1445b8758",
+)
+
+load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
+go_rules_dependencies()
+go_register_toolchains()
+
+load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
+gazelle_dependencies()

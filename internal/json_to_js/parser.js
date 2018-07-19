@@ -25,17 +25,14 @@ const outDir = argv['out-dir'] || '';
 
 for (let i = 0; i < argv._.length; i += 1) {
     const input = argv._[i];
-    const output = path.join(outDir, `${input.slice(0, -4)}js`);
+    const output = path.join(outDir, `${input}.js`);
     readFile(input, 'utf-8', (err, data) => {
         if (err) {
             return console.error(err);
         }
         const parsed = JSON.parse(data);
         const esm = rollup.dataToEsm(parsed);
-
-        if (outDir) {
-            mkdirp.sync(outDir);
-        }
+        mkdirp.sync(path.dirname(output));
 
         return writeFile(output, esm, (err2) => {
             if (err2) {

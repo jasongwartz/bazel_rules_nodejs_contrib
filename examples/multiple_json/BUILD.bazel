@@ -1,6 +1,6 @@
 load("//:defs.bzl", "json_to_js")
 
 json_to_js(
-  name = "multiple_json",
-  srcs = glob(["*json"]),
+    name = "multiple_json",
+    srcs = glob(["*json"]),
 )

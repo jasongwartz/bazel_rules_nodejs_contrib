@@ -13,7 +13,7 @@
 #  limitations under the License.
 
 def _toml_to_js(ctx):
-    outputs = [ctx.actions.declare_file(src.basename[:-4] + "js") for src in ctx.files.srcs]
+    outputs = [ctx.actions.declare_file(src.basename + ".js") for src in ctx.files.srcs]
     
     args = ctx.actions.args()
     args.add(["--out-dir", ctx.bin_dir.path])

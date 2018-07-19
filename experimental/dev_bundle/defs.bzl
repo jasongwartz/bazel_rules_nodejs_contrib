@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-def collect_es6_sources(ctx):
+def collect_sources(ctx):
   non_rerooted_files = [d for d in ctx.files.deps if d.is_source]
   if hasattr(ctx.attr, "srcs"):
     non_rerooted_files += ctx.files.srcs
@@ -21,28 +21,16 @@ def collect_es6_sources(ctx):
       non_rerooted_files += dep.typescript.transitive_es6_sources.to_list()
 
 
+  # Note: See https://github.com/bazelbuild/bazel/issues/5630 why we are doing this
   rerooted_files = []
   for file in non_rerooted_files:
     if file.is_source:
       path = file.short_path
       if (path.startswith("../")):
           path = "external/" + path[3:]
-
-      # rerooted_file = ctx.actions.declare_file(
-      # "%s.es6/%s" % (
-      #     ctx.label.name,
-      #     # the .closure.js filename is an artifact of the rules_typescript layout
-      #     # TODO(mrmeku): pin to end of string, eg. don't match foo.closure.jso.js
-      #     path.replace(".js", ".js")))
-
-      rerooted_file = ctx.actions.declare_file(
-      "%s" % (
-          # the .closure.js filename is an artifact of the rules_typescript layout
-          # TODO(mrmeku): pin to end of string, eg. don't match foo.closure.jso.js
-          path.replace(".js", ".js")))
-      # Cheap way to create an action that copies a file
-      # TODO(alexeagle): discuss with Bazel team how we can do something like
-      # runfiles to create a re-rooted tree. This has performance implications.
+      
+      rerooted_file = ctx.actions.declare_file(path)
+      # Cheap way to create an action that copies a file. This has performance implications.
       ctx.actions.expand_template(
           output = rerooted_file,
           template = file,
@@ -53,29 +41,19 @@ def collect_es6_sources(ctx):
 
     rerooted_files += [rerooted_file]
 
-  #TODO(mrmeku): we should include the files and closure_js_library contents too
   return depset(direct = rerooted_files)
 
 def _dev_bundle(ctx):
     args = ctx.actions.args()
     args.add(["-E", "--map-inline"])
+    # Same issue as with the rerooting above
     # args.add([ctx.attr.entry_point])
-    # args.add(["%s/%s.es6/%s" % (ctx.bin_dir.path, ctx.label.name, ctx.attr.entry_point)])
     args.add(["%s/%s" % (ctx.bin_dir.path, ctx.attr.entry_point)])
     args.add([ctx.outputs.build.path])
 
-    sources = collect_es6_sources(ctx)
+    sources = collect_sources(ctx)
     inputs = sources + ctx.files.node_modules
     outputs = [ctx.outputs.build]
-
-    # print(ctx.bin_dir.path)
-
-    # ctx.actions.run_shell(
-    #     command = "ls -lah %s/weather_widget_dev_bundle.es6/assets/scripts" % ctx.bin_dir.path,
-    #     inputs = inputs,
-    #     outputs = [ctx.outputs.build_test],
-    #     arguments = [args],
-    # )
 
     ctx.actions.run(
         executable = ctx.executable._pax,
@@ -86,7 +64,6 @@ def _dev_bundle(ctx):
 
     return [
       DefaultInfo(
-        # files=depset(outputs + [ctx.outputs.build_test])
         files=depset(outputs)
       ),
     ]
@@ -113,10 +90,10 @@ dev_bundle = rule(
             allow_single_file = True,
             executable = True,
             cfg = "host",
-            default = Label("@pax//linux-x86_64:pax")),
+            default = Label("//experimental/dev_bundle:pax"),
+        ),
     },
     outputs = {
       "build": "%{name}.js",
-      # "build_test": "%{name}.test.js",
     }
 )

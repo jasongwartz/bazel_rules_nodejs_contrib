@@ -26,6 +26,7 @@ export default {
     plugins: [
         VuePlugin()
     ],
+    treeshake: false,
     output: {
         format: 'es',
         strict: false,

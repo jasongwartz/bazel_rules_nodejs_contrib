@@ -18,9 +18,9 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 nodejs_binary(
     name = "toml_to_js",
+    data = [
+        "parser.js",
+    ],
     entry_point = "ecosia_bazel_rules_nodejs_contrib/internal/toml_to_js/parser.js",
     node_modules = "@toml_to_js_deps//:node_modules",
-    data = [
-      "parser.js",
-    ]
 )
