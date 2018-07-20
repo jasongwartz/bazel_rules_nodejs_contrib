@@ -1,0 +1,11 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_test")
+
+exports_files([".eslintrc.js"])
+
+nodejs_test(
+    name = "eslint",
+    entry_point = "eslint/bin/eslint.js",
+    node_modules = "@eslint_deps//:node_modules",
+)

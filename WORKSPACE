@@ -31,6 +31,7 @@ node_repositories(
     "//internal/json_to_js:package.json",
     "//internal/toml_to_js:package.json",
     "//internal/vue_component:package.json",
+    "//experimental/eslint:package.json",
   ],
 )
 

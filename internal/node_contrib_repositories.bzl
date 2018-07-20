@@ -34,3 +34,9 @@ def node_contrib_repositories():
     package_json = "@ecosia_bazel_rules_nodejs_contrib//internal/json_to_js:package.json",
     yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//internal/json_to_js:yarn.lock",
   )
+
+  yarn_install(
+    name = "eslint_deps",
+    package_json = "@ecosia_bazel_rules_nodejs_contrib//experimental/eslint:package.json",
+    yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//experimental/eslint:yarn.lock",
+  )
