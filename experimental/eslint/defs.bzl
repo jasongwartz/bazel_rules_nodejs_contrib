@@ -12,6 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 load("@bazel_skylib//:lib.bzl", "shell")
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 # TODO(Markus): Allow for full customization, including with custom plugins etc.
 # Extract inline bash content out into a template file
@@ -55,18 +56,20 @@ export RUNFILES=$(pwd)/..
 export RUNFILES_MANIFEST_ONLY=1
 export RUNFILES_MANIFEST_FILE=$(pwd)/../MANIFEST
 
+echo "Running: eslint ${ARGS[@]}"
+
 "$eslint_short_path" "${ARGS[@]}"
-""" % (ctx.attr.modified_files_only, shell.quote(ctx.executable._eslint.short_path), _array_literal(args)),
+""" % (ctx.attr.modified_files_only, shell.quote(ctx.executable.eslint.short_path), _array_literal(args)),
         is_executable = True,
     )
 
     transitive_depsets = []
-    default_runfiles = ctx.attr._eslint[DefaultInfo].default_runfiles
+    default_runfiles = ctx.attr.eslint[DefaultInfo].default_runfiles
     if default_runfiles != None:
         transitive_depsets.append(default_runfiles.files)
 
     runfiles = ctx.runfiles(
-      files = ctx.files._eslint + ctx.files.data + ctx.files._bash + [ctx.file.config],
+      files = ctx.files.eslint + ctx.files.data + ctx.files._bash + [ctx.file.config],
       transitive_files = depset([], transitive = transitive_depsets),
     )
     return [DefaultInfo(
@@ -96,10 +99,9 @@ eslint = rule(
             doc = "Further dpendencies",
             allow_files = True,
         ),
-        "_eslint": attr.label(
+        "eslint": attr.label(
             executable = True,
             cfg = "target",
-            default = Label("//experimental/eslint:eslint")
         ),
         "_bash": attr.label(
             cfg = "target",
@@ -109,3 +111,33 @@ eslint = rule(
     },
     executable = True,
 )
+
+def eslint_macro(**kwargs):
+    """eslint binary wrapper for `eslint`
+
+    Args:
+        **kwargs: node_modules and eslint_binary_name is passed to the binary, everything else is
+        passed through to `eslint`
+    """
+    node_modules = kwargs.pop('node_modules', "@eslint_deps//:node_modules")
+    # Allow a custom binary name to keep reusing the same binary on mutltiple rule instantiations
+    eslint_binary_name = kwargs.pop('eslint_binary_name', "%s_eslint" % kwargs['name'])
+
+    if eslint_binary_name not in native.existing_rules():
+        nodejs_binary(
+            name = eslint_binary_name,
+            entry_point = "eslint/bin/eslint.js",
+            node_modules = node_modules,
+            visibility = ["//visibility:public"],
+        )
+
+    # get the absolute label for the above binary
+    r = native.existing_rule(eslint_binary_name)
+
+    if r['generator_location'].startswith("/"):
+        eslint_bin = native.repository_name() + "//:" + r['name']
+    else:
+        eslint_bin = native.repository_name() + "//" + r['generator_location'].rsplit("/", maxsplit=1)[0] + ":" + r['name']
+
+    kwargs["eslint"] = eslint_bin
+    eslint(**kwargs)
