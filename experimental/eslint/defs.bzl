@@ -26,12 +26,12 @@ def _array_literal(iterable):
   return "(" + " ".join([str(i) for i in iterable]) + ")"
 
 def _eslint_impl(ctx):
-    args = ["-c", ctx.file.config.path, "--ext .js,.vue"]
-    args.extend(["--ignore-path", "\"$BUILD_WORKSPACE_DIRECTORY/.gitignore\""])
+    args = ["--ext .js,.vue"]
+    args.extend(["--ignore-path", ".gitignore"])
     if ctx.attr.modified_files_only:
         args.extend(["$modified_files"])
     else:
-        args.extend(["\"$BUILD_WORKSPACE_DIRECTORY/%s\"" % path for path in ctx.attr.paths])
+        args.extend(ctx.attr.paths)
     out_file = ctx.actions.declare_file(ctx.label.name + ".bash")
     ctx.actions.write(
         output = out_file,
@@ -58,6 +58,7 @@ export RUNFILES_MANIFEST_FILE=$(pwd)/../MANIFEST
 
 echo "Running: eslint ${ARGS[@]}"
 
+cd $BUILD_WORKSPACE_DIRECTORY
 "$eslint_short_path" "${ARGS[@]}"
 """ % (ctx.attr.modified_files_only, shell.quote(ctx.executable.eslint.short_path), _array_literal(args)),
         is_executable = True,
