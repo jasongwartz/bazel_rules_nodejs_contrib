@@ -41,7 +41,7 @@ def _nuxt_build(ctx):
       args.add(ctx.label.package)
     
     ctx.actions.run(
-        executable = ctx.executable._nuxt,
+        executable = ctx.executable.nuxt,
         inputs = ctx.files.srcs + ctx.files.node_modules + [bin_dir_config],
         outputs = [output_dir],
         arguments = [args],
