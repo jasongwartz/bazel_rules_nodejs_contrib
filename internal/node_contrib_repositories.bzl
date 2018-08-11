@@ -40,3 +40,9 @@ def node_contrib_repositories():
     package_json = "@ecosia_bazel_rules_nodejs_contrib//experimental/eslint:package.json",
     yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//experimental/eslint:yarn.lock",
   )
+
+  yarn_install(
+    name = "nuxt_build",
+    package_json = "@ecosia_bazel_rules_nodejs_contrib//experimental/nuxt_build:package.json",
+    yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//experimental/nuxt_build:yarn.lock",
+  )

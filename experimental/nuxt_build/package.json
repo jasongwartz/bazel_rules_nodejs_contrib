@@ -1,0 +1,13 @@
+{
+    "name": "nuxt_build",
+    "dependencies": {
+        "nuxt": "^1.4.2",
+        "vue": "^2.5.16",
+        "vue-meta": "^1.5.2",
+        "vue-router": "^3.0.1",
+        "vue-style-loader": "^4.1.1",
+        "sass-loader": "^7.1.0",
+        "node-sass": "^4.9.3",
+        "babel-loader": "^7.1.5"
+    }
+}
