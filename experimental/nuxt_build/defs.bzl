@@ -46,11 +46,13 @@ def _nuxt_build(ctx):
         outputs = [output_dir],
         arguments = [args],
         mnemonic = "NuxtBuild",
-        progress_message = "Building nuxt production assets for %s" % ctx.label.name
+        progress_message = "Creating nuxt production assets for %s" % ctx.label.name
     )
 
     return [
-        DefaultInfo(files = depset([output_dir]))
+        DefaultInfo(
+            files=depset(direct=[output_dir]),
+        ),
     ]
 
 nuxt_build = rule(
