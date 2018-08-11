@@ -70,7 +70,7 @@ nuxt_build = rule(
         "node_modules": attr.label(
             doc = """Dependencies from npm that provide some modules that must be resolved by babel.""",
         ),
-        "_nuxt": attr.label(
+        "nuxt": attr.label(
             executable = True,
             cfg = "host",
             default = Label("//experimental/nuxt_build:nuxt")
