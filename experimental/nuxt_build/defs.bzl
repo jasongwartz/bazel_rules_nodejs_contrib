@@ -16,37 +16,22 @@ load("@bazel_skylib//:lib.bzl", "paths")
 
 def _nuxt_build(ctx):
     output_dir = ctx.actions.declare_directory(".nuxt")
-    bin_dir_config = ctx.actions.declare_file(ctx.label.name + ctx.file.nuxt_config.basename)
-
-    path_package_to_root = ""
-
-    if ctx.label.package:
-      for i in range(ctx.label.package.count("/") + 1):
-        path_package_to_root += "../"
-
-
-    ctx.actions.expand_template(
-      template = ctx.file.nuxt_config,
-      output = bin_dir_config,
-      substitutions = {
-        "<bazel-bin>": path_package_to_root + ctx.bin_dir.path,
-      }
-    )
     
     args = ctx.actions.args()
     args.add("build")
     args.add("-c")
-    args.add(path_package_to_root + bin_dir_config.path)
-    if ctx.label.package:
-      args.add(ctx.label.package)
+    args.add(ctx.file.nuxt_config.short_path)
     
     ctx.actions.run(
         executable = ctx.executable.nuxt,
-        inputs = ctx.files.srcs + ctx.files.node_modules + [bin_dir_config],
+        inputs = ctx.files.srcs + ctx.files.node_modules + [ctx.file.nuxt_config],
         outputs = [output_dir],
         arguments = [args],
         mnemonic = "NuxtBuild",
-        progress_message = "Creating nuxt production assets for %s" % ctx.label.name
+        progress_message = "Creating nuxt production assets for %s" % ctx.label.name,
+        env = {
+          "NUXT_BUILD_DIR_PREFIX": ctx.bin_dir.path + "/",
+        },
     )
 
     return [
