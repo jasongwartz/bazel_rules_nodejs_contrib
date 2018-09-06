@@ -31,6 +31,7 @@ def _nuxt_build(ctx):
         progress_message = "Creating nuxt production assets for %s" % ctx.label.name,
         env = {
           "NUXT_BUILD_DIR_PREFIX": ctx.bin_dir.path + "/",
+          "NODE_ENV": "build",
         },
     )
 
