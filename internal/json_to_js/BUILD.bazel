@@ -20,7 +20,10 @@ nodejs_binary(
     name = "json_to_js",
     data = [
         "parser.js",
+        "@json_to_js_deps//:rollup-pluginutils",
+        "@json_to_js_deps//:minimist",
+        "@json_to_js_deps//:mkdirp",
     ],
     entry_point = "ecosia_bazel_rules_nodejs_contrib/internal/json_to_js/parser.js",
-    node_modules = "@json_to_js_deps//:node_modules",
+    install_source_map_support = False,
 )

@@ -20,6 +20,11 @@ exports_files(["rollup.config.js"])
 
 nodejs_binary(
     name = "rollup_vue",
-    entry_point = "vue_component_deps/node_modules/rollup/bin/rollup",
-    node_modules = "@vue_component_deps//:node_modules",
+    entry_point = "rollup/bin/rollup",
+    data = [
+        "@vue_component_deps//:rollup",
+        "@vue_component_deps//:rollup-plugin-vue",
+        "@vue_component_deps//:vue-template-compiler",
+    ],
+    install_source_map_support = False,
 )

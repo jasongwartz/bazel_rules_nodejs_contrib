@@ -12,7 +12,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 load("@bazel_skylib//:lib.bzl", "shell")
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:defs.bzl", _nodejs_binary = "nodejs_binary")
 
 # TODO(Markus): Allow for full customization, including with custom plugins etc.
 # Extract inline bash content out into a template file
@@ -80,7 +80,7 @@ cd $BUILD_WORKSPACE_DIRECTORY
     )]
 
 
-eslint = rule(
+_eslint = rule(
     implementation = _eslint_impl,
     attrs = {
         "paths": attr.string_list(
@@ -117,18 +117,26 @@ def eslint_macro(**kwargs):
     """eslint binary wrapper for `eslint`
 
     Args:
-        **kwargs: node_modules and eslint_binary_name is passed to the binary, everything else is
+        **kwargs: data and eslint_binary_name is passed to the binary, everything else is
         passed through to `eslint`
     """
-    node_modules = kwargs.pop('node_modules', "@eslint_deps//:node_modules")
+    default_data = [
+        "@eslint_deps//:eslint",
+        "@eslint_deps//:babel-eslint",
+        "@eslint_deps//:eslint-config-airbnb-base",
+        "@eslint_deps//:eslint-loader",
+        "@eslint_deps//:eslint-plugin-import",
+        "@eslint_deps//:eslint-plugin-vue",
+    ]
+    data = kwargs.pop('data', default_data)
     # Allow a custom binary name to keep reusing the same binary on mutltiple rule instantiations
     eslint_binary_name = kwargs.pop('eslint_binary_name', "%s_eslint" % kwargs['name'])
 
     if eslint_binary_name not in native.existing_rules():
-        nodejs_binary(
+        _nodejs_binary(
             name = eslint_binary_name,
             entry_point = "eslint/bin/eslint.js",
-            node_modules = node_modules,
+            data = data,
             visibility = ["//visibility:public"],
         )
 
@@ -141,4 +149,4 @@ def eslint_macro(**kwargs):
         eslint_bin = native.repository_name() + "//" + r['generator_location'].rsplit("/", maxsplit=1)[0] + ":" + r['name']
 
     kwargs["eslint"] = eslint_bin
-    eslint(**kwargs)
+    _eslint(**kwargs)

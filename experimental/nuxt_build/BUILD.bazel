@@ -19,5 +19,15 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 nodejs_binary(
     name = "nuxt",
     entry_point = "nuxt/bin/nuxt",
-    node_modules = "@nuxt_build//:node_modules",
+    data = [
+        "@nuxt_build//:nuxt",
+        "@nuxt_build//:vue",
+        "@nuxt_build//:vue-meta",
+        "@nuxt_build//:vue-router",
+        "@nuxt_build//:vue-style-loader",
+        "@nuxt_build//:sass-loader",
+        "@nuxt_build//:node-sass",
+        "@nuxt_build//:babel-loader",
+    ],
+    install_source_map_support = False,
 )

@@ -20,7 +20,12 @@ nodejs_binary(
     name = "toml_to_js",
     data = [
         "parser.js",
+        "@toml_to_js_deps//:markty-toml",
+        "@toml_to_js_deps//:toml-j0.4",
+        "@toml_to_js_deps//:rollup-pluginutils",
+        "@toml_to_js_deps//:commander",
+        "@toml_to_js_deps//:mkdirp",
     ],
     entry_point = "ecosia_bazel_rules_nodejs_contrib/internal/toml_to_js/parser.js",
-    node_modules = "@toml_to_js_deps//:node_modules",
+    install_source_map_support = False,
 )
