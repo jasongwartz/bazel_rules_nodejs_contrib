@@ -14,6 +14,16 @@
 
 load("@bazel_skylib//:lib.bzl", "paths")
 
+def _make_resolve(ctx, val):
+    if val[0:2] == "$(" and val[-1] == ")":
+        if val[2:-1] not in ctx.var:
+            fail("""%(val)s not found in configuration variables. Maybe you forgot to set --define
+                 %(val)s=<value>?""" % {val: val[2:-1]})
+        else:
+            return ctx.var[val[2:-1]]
+    else:
+        return val
+
 def _nuxt_build(ctx):
     output_dir = ctx.actions.declare_directory(".nuxt")
     
@@ -21,6 +31,13 @@ def _nuxt_build(ctx):
     args.add("build")
     args.add("-c")
     args.add(ctx.file.nuxt_config.short_path)
+
+    build_env = {
+        "NUXT_BUILD_DIR_PREFIX": ctx.bin_dir.path + "/",
+    }
+
+    if ctx.attr.node_env:
+        build_env['NODE_ENV'] = _make_resolve(ctx, ctx.attr.node_env)
     
     ctx.actions.run(
         executable = ctx.executable.nuxt,
@@ -29,10 +46,7 @@ def _nuxt_build(ctx):
         arguments = [args],
         mnemonic = "NuxtBuild",
         progress_message = "Creating nuxt production assets for %s" % ctx.label.name,
-        env = {
-          "NUXT_BUILD_DIR_PREFIX": ctx.bin_dir.path + "/",
-          "NODE_ENV": "build",
-        },
+        env = build_env,
     )
 
     return [
@@ -56,6 +70,11 @@ nuxt_build = rule(
         "node_modules": attr.label(
             doc = """Dependencies from npm that provide some modules that must be resolved by babel.""",
         ),
+        "node_env": attr.string(
+            doc = """If set passes in the node env variable with the given value. Supports make
+            variable substituon."""
+            default = "",
+        )
         "nuxt": attr.label(
             executable = True,
             cfg = "host",
