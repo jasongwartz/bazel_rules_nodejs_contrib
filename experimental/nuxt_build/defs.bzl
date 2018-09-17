@@ -72,9 +72,9 @@ nuxt_build = rule(
         ),
         "node_env": attr.string(
             doc = """If set passes in the node env variable with the given value. Supports make
-            variable substituon."""
+            variable substituon.""",
             default = "",
-        )
+        ),
         "nuxt": attr.label(
             executable = True,
             cfg = "host",
