@@ -19,6 +19,8 @@ def collect_sources(ctx):
   for dep in ctx.attr.deps: 
     if hasattr(dep, "typescript"):
       non_rerooted_files += dep.typescript.transitive_es6_sources.to_list()
+    else:
+      non_rerooted_files += dep.files.to_list()
 
 
   # Note: See https://github.com/bazelbuild/bazel/issues/5630 why we are doing this
@@ -29,6 +31,9 @@ def collect_sources(ctx):
       if (path.startswith("../")):
           path = "external/" + path[3:]
       
+      if path.startswith(ctx.label.package):
+        path = path[len(ctx.label.package) + 1:]
+
       rerooted_file = ctx.actions.declare_file(path)
       # Cheap way to create an action that copies a file. This has performance implications.
       ctx.actions.expand_template(
@@ -47,12 +52,14 @@ def _dev_bundle(ctx):
     args = ctx.actions.args()
     args.add(["-E", "--map-inline"])
     # Same issue as with the rerooting above
-    # args.add([ctx.attr.entry_point])
-    args.add(["%s/%s" % (ctx.bin_dir.path, ctx.attr.entry_point)])
+    # args.add([ctx.file.entry_point.path])
+    args.add(["%s/%s" % (ctx.bin_dir.path, ctx.file.entry_point.short_path)])
     args.add([ctx.outputs.build.path])
 
     sources = collect_sources(ctx)
-    inputs = sources + ctx.files.node_modules
+    inputs = sources
+    if ctx.attr.node_modules:
+      inputs += ctx.files.node_modules
     outputs = [ctx.outputs.build]
 
     ctx.actions.run(
@@ -71,21 +78,25 @@ def _dev_bundle(ctx):
 dev_bundle = rule(
     implementation = _dev_bundle,
     attrs = {
-        "entry_point": attr.string(
+        "entry_point": attr.label(
           doc = """The starting point of the application, passed as the `--input` flag to pax.
           This should be a path relative to the workspace root.
           """,
-          mandatory = True),
+          mandatory = True,
+          allow_single_file = [".js"],
+        ),
         "srcs": attr.label_list(
           doc = """JavaScript source files from the workspace.
           These can use ES2015 syntax and ES Modules (import/export)""",
-          allow_files = [".js"]),
+          allow_files = [".js"],
+        ),
         "deps": attr.label_list(
             doc = """Other rules that produce JavaScript outputs, such as `ts_library`.""",
-            ),
+        ),
         "node_modules": attr.label(
             doc = """Dependencies from npm that provide some modules that must be resolved by babel.""",
-            default = Label("@//:node_modules")),
+            default = None,
+        ),
         "_pax": attr.label(
             allow_single_file = True,
             executable = True,

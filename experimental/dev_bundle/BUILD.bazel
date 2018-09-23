@@ -17,8 +17,8 @@ config_setting(
 filegroup(
   name = "pax",
   srcs = select({
-    ":linux_x86": ["@pax//linux-x86_64:pax"],
-    ":darwin_x86": ["@pax//darwin-x86_64:pax"],
+    ":linux_x86": ["@pax//linux-x86_64:px"],
+    ":darwin_x86": ["@pax//darwin-x86_64:px"],
   }),
   visibility = ["//visibility:public"],
 )

@@ -1,0 +1,31 @@
+load("//experimental/dev_bundle:defs.bzl", "dev_bundle")
+load("//experimental/js_devserver:defs.bzl", "js_devserver")
+load("//:defs.bzl", "vue_component")
+
+vue_component(
+    name = "mycomponent",
+    src = "mycomponent.vue",
+)
+
+
+dev_bundle(
+  name = "dev_bundle",
+  entry_point = "index.js",
+  srcs = [
+    "index.js",
+    "lib.js",
+    "msg.js",
+  ],
+  deps = [
+    ":mycomponent",
+  ]
+)
+
+js_devserver(
+    name = "devserver",
+    entry_point = "examples/dev_bundle/dev_bundle.js",
+    serving_path = "/bundle.js",
+    deps = [
+      ":dev_bundle",
+    ],
+)

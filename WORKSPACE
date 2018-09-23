@@ -41,9 +41,9 @@ node_contrib_repositories()
 
 http_archive(
     name = "pax",
-    url = "https://github.com/globegitter/pax/archive/0a71acad5091d92b8fdc8c0c135be0f4447b9749.tar.gz",
-    strip_prefix = "pax-0a71acad5091d92b8fdc8c0c135be0f4447b9749",
-    sha256 = "b168bc0ea81cde55f42b2e3028c42db9da5e2197f3bfc80365d617cc11966cee",
+    url = "https://github.com/globegitter/pax/archive/5586438b4387d726afb4e113e8a5b08e5c6fd943.tar.gz",
+    strip_prefix = "pax-5586438b4387d726afb4e113e8a5b08e5c6fd943",
+    sha256 = "2934743e4f408c800c99b7553cd15ca64fa8c4ccb316fa9c72838500b2fed3d0",
 )
 
 
