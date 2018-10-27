@@ -41,7 +41,7 @@ def _nuxt_build(ctx):
     
     ctx.actions.run(
         executable = ctx.executable.nuxt,
-        inputs = ctx.files.srcs + ctx.files.node_modules + [ctx.file.nuxt_config],
+        inputs = ctx.files.srcs + ctx.files.deps + [ctx.file.nuxt_config],
         outputs = [output_dir],
         arguments = [args],
         mnemonic = "NuxtBuild",
@@ -67,8 +67,9 @@ nuxt_build = rule(
             allow_single_file = True,
             mandatory = True,
         ),
-        "node_modules": attr.label(
-            doc = """Dependencies from npm that provide some modules that must be resolved by babel.""",
+        "deps": attr.label_list(
+            doc = """Other dependencies, like node modules.""",
+            allow_files = [".vue", ".js"]
         ),
         "node_env": attr.string(
             doc = """If set passes in the node env variable with the given value. Supports make
