@@ -69,7 +69,7 @@ nuxt_build = rule(
         ),
         "deps": attr.label_list(
             doc = """Other dependencies, like node modules.""",
-            allow_files = [".vue", ".js"]
+            allow_files =True,
         ),
         "node_env": attr.string(
             doc = """If set passes in the node env variable with the given value. Supports make
