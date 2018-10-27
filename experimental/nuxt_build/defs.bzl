@@ -39,7 +39,7 @@ def _nuxt_build(ctx):
     if ctx.attr.deps:
         sample_dep =str(ctx.attr.deps[0].label)
         if sample_dep.startswith("@"):
-            external_workspace_name = sample_dep[1 + 1:sample_dep.index("//")]
+            external_workspace_name = sample_dep[1:sample_dep.index("//")]
             # This is currently necessary to get the nuxt 2.x esm stuff to work
             build_env['NODE_PATH'] = "external/{}/node_modules".format(external_workspace_name)
         else:
