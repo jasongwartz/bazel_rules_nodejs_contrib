@@ -11,7 +11,7 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-load("@bazel_skylib//:lib.bzl", "shell")
+load("@bazel_skylib//lib:shell.bzl", "shell")
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 # TODO(Markus): Allow for full customization, including with custom plugins etc.
