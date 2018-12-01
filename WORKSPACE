@@ -71,3 +71,6 @@ go_register_toolchains()
 
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 gazelle_dependencies()
+
+load("//examples/nodejs_jest_test:deps.bzl", "nodejs_jest_test_example_dependencies")
+nodejs_jest_test_example_dependencies()

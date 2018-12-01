@@ -20,9 +20,11 @@ Users should not load files under "/internal"
 load("//internal/json_to_js:defs.bzl", _json_to_js = "json_to_js")
 load("//internal/toml_to_js:defs.bzl", _toml_to_js = "toml_to_js")
 load("//internal/vue_component:defs.bzl", _vue_component = "vue_component")
+load("//internal/nodejs_jest_test:defs.bzl", _node_jest_test_macro = "node_jest_test_macro")
 load("//internal:node_contrib_repositories.bzl", _node_contrib_repositories = "node_contrib_repositories")
 
 json_to_js = _json_to_js
 toml_to_js = _toml_to_js
 vue_component = _vue_component
 node_contrib_repositories = _node_contrib_repositories
+nodejs_jest_test = _node_jest_test_macro

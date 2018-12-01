@@ -1,0 +1,19 @@
+load("//:defs.bzl", "vue_component")
+load("//examples/nodejs_jest_test:jest.bzl", "nodejs_jest_test")
+
+# vue_component(
+#     name = "vue",
+#     src = "mycomponent.vue",
+# )
+# filegroup(
+#     name = "something",
+#     srcs = glob(["*.js"])
+# )
+
+nodejs_jest_test(
+    name = "sum_test",
+    srcs = ["sum.test.js"],
+    deps = [
+        "sum.js",
+    ],
+)

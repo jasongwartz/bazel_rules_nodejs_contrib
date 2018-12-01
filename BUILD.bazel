@@ -4,3 +4,9 @@ gazelle(
     name = "gazelle",
     prefix = "github.com/example/project",
 )
+
+filegroup(
+    name = "node_modules_none",
+    srcs = [],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,1 @@
+test --test_verbose_timeout_warnings --test_summary=detailed --test_output=all
