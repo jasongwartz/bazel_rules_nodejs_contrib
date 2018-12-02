@@ -64,10 +64,57 @@ node_jest_test = rule(
     }),
 )
 
+node_jest = rule(
+    _node_jest_test_impl,
+    attrs=dict(NODEJS_EXECUTABLE_ATTRS, **{
+        "entry_point": attr.string(
+            mandatory=False,
+        ),
+        "srcs": attr.label_list(
+            doc = """Test source files""",
+            allow_files=True,
+        ),
+        "data": attr.label_list(
+            allow_files=True,
+            aspects=[sources_aspect, module_mappings_runtime_aspect, collect_node_modules_aspect]), # test_sources_aspect
+        "env": attr.string(
+            default="jsdom",
+            values=["node", "jsdom"]
+        ),
+        "update_snapshots": attr.bool(
+            default=False,
+        ),
+        "_jest_template": attr.label(
+            default=Label(
+                "@ecosia_bazel_rules_nodejs_contrib//internal/nodejs_jest_test:jest-runner.js"),
+            allow_files=True,
+            single_file=True),
+    }),
+    executable = True,
+    outputs=dict(NODEJS_EXECUTABLE_OUTPUTS, **{
+        "jest": "%{name}_jest.js",
+    }),
+)
+
 
 def _node_jest_test_macro_base(name, srcs, data=[], args=[], visibility=None, tags=[], **kwargs):
     node_jest_test(
         name=name,
+        srcs=srcs,
+        data=data + ["@bazel_tools//tools/bash/runfiles",],
+                    #  "@npm//jest",
+                    #  "@npm//jest-cli",
+                    #  "@npm//fs-extra"],
+        # testonly=1,
+        tags=tags,
+        # visibility=["//visibility:private"],
+        visibility=visibility,
+        args=args,
+        **kwargs
+    )
+
+    node_jest(
+        name=name + ".binary",
         srcs=srcs,
         data=data + ["@bazel_tools//tools/bash/runfiles",],
                     #  "@npm//jest",
