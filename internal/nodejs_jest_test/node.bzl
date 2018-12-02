@@ -145,11 +145,12 @@ def nodejs_binary_impl(ctx, entry_point=None, files=[]):
     runfiles = depset(sources + files + [node, ctx.outputs.loader, ctx.file._repository_args] + node_modules + ctx.files._node_runfiles)
 
     return [DefaultInfo(
+        files = depset([ctx.outputs.script]),
         executable = ctx.outputs.script,
         runfiles = ctx.runfiles(
             transitive_files = runfiles,
-            files = [node, ctx.outputs.loader] + node_modules + sources,
-            collect_data = True,
+            # files = [node, ctx.outputs.loader] + node_modules + sources,
+            # collect_data = True,
         ),
     )]
 

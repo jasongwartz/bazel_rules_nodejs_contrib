@@ -8,7 +8,7 @@
 export default {
     methods: {
         print() {
-            return `Hello Vue!`;
+            return `Hello Vue`;
         },
     }
 };

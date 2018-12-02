@@ -13,6 +13,7 @@ nodejs_jest_test(
     deps = [
         ":component",
     ],
+    tags = ["ibazel_notify_changes"]
 )
 
 nodejs_jest_test(
@@ -21,4 +22,5 @@ nodejs_jest_test(
     deps = [
         "sum.js",
     ],
+    tags = ["ibazel_notify_changes"]
 )

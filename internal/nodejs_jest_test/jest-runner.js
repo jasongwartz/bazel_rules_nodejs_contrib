@@ -1,9 +1,79 @@
 const jest = require('jest-cli');
 const fs = require('fs-extra');
 const nodePath = require('path');
+const {createInterface} = require('readline');
+var http = require('http');
+console.log("Begin");
+
+// let path = "";
+
+// process.stdin.on('data', function(chunk) {
+//   console.log("!!!!!");
+//   var buffer = new Buffer(chunk);
+//   path = buffer.toString();
+// });
+
+function onRequest(request, response) {
+  // process.stdin.on('data', function(chunk) {
+  //   console.log("Got data");
+  //   var buffer = new Buffer(chunk);
+  //   path = buffer.toString();
+  // });
+
+  // const rl = createInterface({input: process.stdin, terminal: true});
+
+  // rl.on('line', chunk => {
+  //   console.log('Got line');
+  //   console.log(chunk)
+  //   console.log('IBAZEL WRITE');
+  //   if (chunk === IBAZEL_NOTIFY_BUILD_SUCCESS) {
+  //     console.log("should rerun");
+  //   }
+  // });
+  // rl.on('close', () => {
+  //   console.error('ibazel stream closed server');
+  //   // Give ibazel 5s to kill our process, otherwise do it ourselves
+  //   // setTimeout(() => {
+  //   //   console.error('ibazel failed to stop karma; probably a bug');
+  //   //   process.exit(1);
+  //   // }, 5000);
+  // });
+  // console.log("Request received" + path);
+  response.end();
+  // fs.readdir(path, function(err, items) {
+  //   response.writeHead(200, {"Content-Type": "text/plain"});
+  //   response.write(JSON.stringify(items));
+  //   response.end();
+  // });
+}
+
+http.createServer(onRequest).listen(8000);
+
+
+const rl = createInterface({input: process.stdin, terminal: true});
+
+rl.on('line', chunk => {
+  console.log('Got line')
+  console.log(chunk)
+  console.log('IBAZEL WRITE');
+  if (chunk === IBAZEL_NOTIFY_BUILD_SUCCESS) {
+    console.log("should rerun");
+  }
+});
+rl.on('close', () => {
+  console.error('ibazel stream closed');
+  // Give ibazel 5s to kill our process, otherwise do it ourselves
+  // setTimeout(() => {
+  //   console.error('ibazel failed to stop karma; probably a bug');
+  //   process.exit(1);
+  // }, 5000);
+});
+
+
+const IBAZEL_NOTIFY_BUILD_SUCCESS = 'IBAZEL_BUILD_COMPLETED SUCCESS';
+const IBAZEL_NOTIFY_CHANGES = 'IBAZEL_NOTIFY_CHANGES';
 
 const outputDir = process.env.TEST_UNDECLARED_OUTPUTS_DIR;
-// console.log("outputDir", outputDir);
 // console.log("outputDir", outputDir);
 // console.log("process env", process.env);
 const cwd = process.cwd();
@@ -63,7 +133,7 @@ jest
           );
       }),
       fs.writeFile(
-        nodePath.resolve(outputDir, 'summary.json'),
+        nodePath.resolve(outputDir || "", 'summary.json'),
         JSON.stringify({
           addedPaths: addedPaths.map((value) => value[1]),
           removedPaths: removedPaths.map((value) => value[1]),
@@ -71,7 +141,13 @@ jest
       ),
     );
   })
+  .then(() => {
+    process.exitCode = 0;
+    console.log("Tests done.")
+  })
   .catch((error) => {
     console.error(error);
-    process.exitCode = 3;
+    process.exit(3);
   });
+
+process.exitCode = 0;
