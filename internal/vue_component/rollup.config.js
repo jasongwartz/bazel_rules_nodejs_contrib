@@ -24,11 +24,12 @@ import VuePlugin from 'rollup-plugin-vue';
 const input = 'TMPL_src_name';
 export default {
     plugins: [
-        VuePlugin()
+        VuePlugin(),
     ],
     treeshake: false,
     output: {
-        format: 'es',
+        // TODO: Figure out if we could need format es here
+        format: 'cjs',
         strict: false,
         interop: false
     },
