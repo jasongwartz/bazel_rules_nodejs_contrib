@@ -16,6 +16,7 @@ def _node_jest_test_impl(ctx):
         substitutions={
             "TEMPLATED_env": "\"" + ctx.attr.env + "\"",
             # "TEMPLATED_ci": "true" if get_ci(ctx) else "false",
+            "TEMPLATED_config_path": ctx.file.config.short_path if ctx.attr.config else '',
             "TEMPLATED_ci": "false",
             "TEMPLATED_filePaths": "[" + ",\n  ".join(
                 ["\"" + f.short_path + "\"" for f in test_sources]) + "]",
@@ -23,11 +24,13 @@ def _node_jest_test_impl(ctx):
         },
     )
 
+    config_file = [ctx.file.config] if ctx.attr.config else []
+
     return nodejs_binary_impl(
         ctx,
         entry_point=short_path_to_manifest_path(
             ctx, ctx.outputs.jest.short_path),
-        files=[ctx.outputs.jest] + test_sources,
+        files=[ctx.outputs.jest] + config_file + test_sources,
     )
 
 
@@ -50,6 +53,11 @@ node_jest_test = rule(
         ),
         "update_snapshots": attr.bool(
             default=False,
+        ),
+        "config": attr.label(
+            doc = """jest config file""",
+            allow_single_file = True,
+            mandatory = False,
         ),
         "_jest_template": attr.label(
             default=Label(
@@ -83,6 +91,11 @@ node_jest = rule(
         ),
         "update_snapshots": attr.bool(
             default=False,
+        ),
+        "config": attr.label(
+            doc = """jest config file""",
+            allow_single_file = True,
+            mandatory = False,
         ),
         "_jest_template": attr.label(
             default=Label(

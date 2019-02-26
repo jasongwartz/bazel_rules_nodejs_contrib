@@ -1,1 +1,1 @@
-exports_files(["jest-runner.js", "runner.js", "runner.sh"])
+exports_files(["jest-runner.js", "runner.js", "runner.sh", "jest.config.js"])

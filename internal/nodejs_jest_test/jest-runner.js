@@ -1,9 +1,15 @@
+const nodePath = require('path');
+const { createInterface } = require('readline');
+
 const jest = require('jest-cli');
 const fs = require('fs-extra');
-const nodePath = require('path');
-const {createInterface} = require('readline');
-var http = require('http');
-console.log("Begin");
+
+const configPath = 'TEMPLATED_config_path';
+
+// runCLI accepts a path as well as a json string for the config
+// const jestConfig = configPath ? nodePath.resolve(configPath) : '{}';
+const jestConfig = configPath ? configPath : '{}';
+// var http = require('http');
 
 // let path = "";
 
@@ -47,7 +53,8 @@ function onRequest(request, response) {
   // });
 }
 
-http.createServer(onRequest).listen(8000);
+// Note: this was as a test to get ibazel properly to work
+// http.createServer(onRequest).listen(8000);
 
 
 const rl = createInterface({input: process.stdin, terminal: true});
@@ -61,7 +68,7 @@ rl.on('line', chunk => {
   }
 });
 rl.on('close', () => {
-  console.error('ibazel stream closed');
+  // console.error('ibazel stream closed');
   // Give ibazel 5s to kill our process, otherwise do it ourselves
   // setTimeout(() => {
   //   console.error('ibazel failed to stop karma; probably a bug');
@@ -95,21 +102,33 @@ const getSnapshotPath = (testResult) => {
   ];
 };
 
+console.log("jestConfig", jestConfig);
+
+const files = TEMPLATED_filePaths;
+
+// const absoluteFiles = files.map(f => nodePath.resolve(f));
+
+// console.log(absoluteFiles);
+
+const argv = {
+  config: jestConfig,
+  watchman: false,
+  runTestsByPath: true,
+  env: TEMPLATED_env,
+  ci: TEMPLATED_ci,
+  updateSnapshot: TEMPLATED_update,
+  _: files,
+};
+
+// console.log(argv);
+
 jest
   .runCLI(
-    {
-      config: '{}',
-      watchman: false,
-      runTestsByPath: true,
-      env: TEMPLATED_env,
-      ci: TEMPLATED_ci,
-      updateSnapshot: TEMPLATED_update,
-      _: TEMPLATED_filePaths,
-    },
+    argv,
     [cwd],
   )
   .then((result) => {
-    if (result.results.numFailedTests > 0) {
+    if (result.results.numFailedTests > 0 || result.results.numFailedTestSuites > 0) {
       process.exitCode = 3;
     }
 
@@ -141,13 +160,9 @@ jest
       ),
     );
   })
-  .then(() => {
-    process.exitCode = 0;
-    console.log("Tests done.")
-  })
   .catch((error) => {
     console.error(error);
     process.exit(3);
   });
 
-process.exitCode = 0;
+// process.exitCode = 0;
