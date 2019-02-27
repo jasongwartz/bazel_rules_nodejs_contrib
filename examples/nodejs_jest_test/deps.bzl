@@ -12,15 +12,13 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:defs.bzl", "yarn_install")
 
-exports_files(["rollup.config.js"])
+def nodejs_jest_test_example_dependencies():
 
-nodejs_binary(
-    name = "rollup_vue",
-    entry_point = "vue_component_deps/node_modules/rollup/bin/rollup",
-    node_modules = "@vue_component_deps//:node_modules",
-    install_source_map_support = False,
-)
+  yarn_install(
+    name = "nodejs_jest_test_example_deps",
+    package_json = "@ecosia_bazel_rules_nodejs_contrib//examples/nodejs_jest_test:package.json",
+    yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//examples/nodejs_jest_test:yarn.lock",
+  )

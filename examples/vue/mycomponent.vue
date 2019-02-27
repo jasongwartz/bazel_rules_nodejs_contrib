@@ -16,8 +16,11 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+$color: red;
+
 .title {
+    color: $color;
     font-size: 24px;
 }
 </style>

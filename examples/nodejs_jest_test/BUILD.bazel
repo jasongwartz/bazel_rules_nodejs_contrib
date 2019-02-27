@@ -1,0 +1,26 @@
+load("//:defs.bzl", "vue_component")
+load("//examples/nodejs_jest_test:jest.bzl", "nodejs_jest_test")
+
+vue_component(
+    name = "component",
+    src = "component.vue",
+    out = "component"
+)
+
+nodejs_jest_test(
+    name = "component_test",
+    srcs = ["component.test.js"],
+    deps = [
+        ":component",
+    ],
+    tags = ["ibazel_notify_changes"]
+)
+
+nodejs_jest_test(
+    name = "sum_test",
+    srcs = ["sum.test.js"],
+    deps = [
+        "sum.js",
+    ],
+    tags = ["ibazel_notify_changes"]
+)
