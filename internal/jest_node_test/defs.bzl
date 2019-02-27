@@ -1,4 +1,4 @@
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_test")
+load("@build_bazel_rules_nodejs//:defs.bzl", _nodejs_test = "nodejs_test")
 
 def _jest_node_test_impl(ctx):
     test_sources = ctx.files.srcs
@@ -77,10 +77,15 @@ _jest_node_test = rule(
 def jest_node_test(name, srcs, config, jest, **kwargs):
     data = kwargs.pop("data", []) + srcs + [config]
     env = kwargs.pop("env", {})
+    tags = kwargs.pop("tags", [])
+    visibility = kwargs.pop("visibility", [])
 
-    nodejs_test(
+    _nodejs_test(
         name = "%s_test" % name,
         data = data,
+        # Note: We do not want to run this target automatically as it will fail
+        # tags = tags + ["manual"],
+        visibility = ["//visibility:private"],
         **kwargs
     )
 
@@ -90,4 +95,6 @@ def jest_node_test(name, srcs, config, jest, **kwargs):
         config = config,
         jest = "%s_test" % name,
         env = env,
+        tags = tags,
+        visibility = visibility,
     )
