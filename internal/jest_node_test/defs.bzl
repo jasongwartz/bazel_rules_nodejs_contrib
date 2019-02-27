@@ -12,11 +12,20 @@ def _jest_node_test_impl(ctx):
 
         {env}
 
-        exec {jest} {args}
+        ARGS="{config_args} --runTestsByPath "
+
+        if [ $# -ne 0 ]; then
+            ARGS+="$@"
+        else
+            ARGS+="{run_tests_args}"
+        fi
+
+        exec {jest} $ARGS
         """.format(
             env = "\n".join(["export %s=%s" % (key, ctx.attr.env[key]) for key in ctx.attr.env]) if ctx.attr.env else "",
             jest = ctx.files.jest[0].short_path,
-            args = "-c " + ctx.file.config.short_path + " --runTestsByPath " + " ".join([f.short_path for f in test_sources]),
+            config_args = "-c " + ctx.file.config.short_path,
+            run_tests_args = " ".join([f.short_path for f in test_sources]),
         ),
         is_executable = True,
     )
