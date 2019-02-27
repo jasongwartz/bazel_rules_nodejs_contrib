@@ -84,7 +84,7 @@ def jest_node_test(name, srcs, config, jest, **kwargs):
         name = "%s_test" % name,
         data = data,
         # Note: We do not want to run this target automatically as it will fail
-        # tags = tags + ["manual"],
+        tags = ["manual"],
         visibility = ["//visibility:private"],
         **kwargs
     )
