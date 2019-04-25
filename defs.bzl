@@ -21,8 +21,8 @@ load("//internal/json_to_js:defs.bzl", _json_to_js = "json_to_js")
 load("//internal/toml_to_js:defs.bzl", _toml_to_js = "toml_to_js")
 load("//internal/vue_component:defs.bzl", _vue_component = "vue_component")
 load("//internal/nodejs_jest_test:defs.bzl", _node_jest_test_macro = "node_jest_test_macro")
-load("//internal/js_library:defs.bzl", js_library = "node_jest_test_macro")
-load("//internal:node_contrib_repositories.bzl", js_library = "node_contrib_repositories")
+load("//internal/js_library:defs.bzl", _js_library = "js_library")
+load("//internal:node_contrib_repositories.bzl", _node_contrib_repositories = "node_contrib_repositories")
 
 json_to_js = _json_to_js
 toml_to_js = _toml_to_js
