@@ -46,7 +46,6 @@ func (s *jslang) Kinds() map[string]rule.KindInfo {
 			MatchAny: false,
 			NonEmptyAttrs: map[string]bool{
 				"srcs": true,
-				"deps": true,
 			},
 			MergeableAttrs: map[string]bool{
 				"srcs": true,
@@ -57,12 +56,14 @@ func (s *jslang) Kinds() map[string]rule.KindInfo {
 			MatchAny: false,
 			NonEmptyAttrs: map[string]bool{
 				"srcs": true,
-				"deps": true,
 			},
 			MergeableAttrs: map[string]bool{
 				"srcs": true,
 			},
-			ResolveAttrs: map[string]bool{"deps": true},
+			ResolveAttrs: map[string]bool{
+				"deps":   true,
+				"config": true,
+			},
 		},
 	}
 }
@@ -133,8 +134,10 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 		if strings.HasSuffix(path.Base(f), ".test.js") {
 			rule := rule.NewRule("jest_node_test", base)
 			rule.SetAttr("srcs", []string{f})
-			// TODO: Ideally we would not just apply public visibility
-			rule.SetAttr("visibility", []string{"//visibility:public"})
+			rule.SetAttr("entry_point", "jest-cli/bin/jest.js")
+			// This is currently not possible. See: https://github.com/bazelbuild/bazel-gazelle/issues/511
+			// rule.SetAttr("env", map[string]string{"NODE_ENV": "test"})
+			rule.SetAttr("jest", "@npm//jest/bin:jest")
 			rules = append(rules, rule)
 		} else {
 			rule := rule.NewRule("js_library", base)

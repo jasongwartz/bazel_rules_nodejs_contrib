@@ -110,6 +110,30 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 		sort.Strings(deps)
 		r.SetAttr("deps", deps)
 	}
+	if r.Kind() == "jest_node_test" {
+		l, err := findJestConfig(ix, from)
+		if err != nil {
+			log.Printf("Jest config %v", err)
+		} else {
+			l = l.Rel(from.Repo, from.Pkg)
+			r.SetAttr("config", l.String())
+		}
+	}
+}
+
+// Note: Ideall this was not necessary and the jest rule would not need a jest config defined in the workspace
+func findJestConfig(ix *resolve.RuleIndex, from label.Label) (label.Label, error) {
+	pkgDir := from.Pkg
+	for pkgDir != ".." {
+		imp := path.Join(pkgDir, "jest.config")
+		log.Println(imp)
+		label, err := resolveWithIndex(ix, imp, from)
+		if err == nil {
+			return label, err
+		}
+		pkgDir = path.Join(pkgDir, "..")
+	}
+	return label.NoLabel, notFoundError
 }
 
 // Taken from https://nodejs.org/api/modules.html#modules_all_together and extended by some common aliases to make sure

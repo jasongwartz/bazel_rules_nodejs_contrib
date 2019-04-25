@@ -124,7 +124,9 @@ js_library(
 jest_node_test(
     name = "colors.test",
     srcs = ["colors.test.js"],
-    visibility = ["//visibility:public"],
+    config = "//:jest.config",
+    entry_point = "jest-cli/bin/jest.js",
+    jest = "@npm//jest/bin:jest",
     deps = [
         ":colors",
         "//hello_world:main",
