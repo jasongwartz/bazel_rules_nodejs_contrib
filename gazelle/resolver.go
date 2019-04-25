@@ -83,7 +83,7 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 	r.DelAttr("deps")
 	depSet := make(map[string]bool)
 	for _, imp := range imports {
-		imp = normaliseImports(imp, from.Pkg)
+		imp = normaliseImports(imp, ix, from)
 		l, err := resolveWithIndex(ix, imp, from)
 		if err == skipImportError {
 			continue
@@ -91,6 +91,11 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 			// npm dependencies are currently not part of the index and would return this error
 			// TODO: Find some way to customise the name of the npm repository. Or maybe this can be fixed somehow by indexing external deps?
 			if isNpmDependency(imp) {
+				s := strings.Split(imp, "/")
+				imp = s[0]
+				if strings.HasPrefix(imp, "@") {
+					imp += "/" + s[1]
+				}
 				depSet["@npm//"+imp] = true
 			} else {
 				log.Printf("Import %v not found.\n", imp)
@@ -111,7 +116,7 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 		r.SetAttr("deps", deps)
 	}
 	if r.Kind() == "jest_node_test" {
-		l, err := findJestConfig(ix, from)
+		l, err := findJsConfig("jest", ix, from)
 		if err != nil {
 			log.Printf("Jest config %v", err)
 		} else {
@@ -122,10 +127,23 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 }
 
 // Note: Ideall this was not necessary and the jest rule would not need a jest config defined in the workspace
-func findJestConfig(ix *resolve.RuleIndex, from label.Label) (label.Label, error) {
+func findJsConfig(configName string, ix *resolve.RuleIndex, from label.Label) (label.Label, error) {
 	pkgDir := from.Pkg
 	for pkgDir != ".." {
-		imp := path.Join(pkgDir, "jest.config")
+		imp := path.Join(pkgDir, configName+".config")
+		label, err := resolveWithIndex(ix, imp, from)
+		if err == nil {
+			return label, err
+		}
+		pkgDir = path.Join(pkgDir, "..")
+	}
+	return label.NoLabel, notFoundError
+}
+
+func findVueConfig(ix *resolve.RuleIndex, from label.Label) (label.Label, error) {
+	pkgDir := from.Pkg
+	for pkgDir != ".." {
+		imp := path.Join(pkgDir, "vue.config")
 		label, err := resolveWithIndex(ix, imp, from)
 		if err == nil {
 			return label, err
@@ -143,7 +161,8 @@ func isNpmDependency(imp string) bool {
 }
 
 // normaliseImports ensures that relative imports or alias imports can all resolve to the same file
-func normaliseImports(imp string, pkgDir string) string {
+func normaliseImports(imp string, ix *resolve.RuleIndex, from label.Label) string {
+	pkgDir := from.Pkg
 	// TODO: Right now we assume @/ and ~~ to simply be an alias for imports from the root, but that might not be true.
 	// Also need to support ~ aliases which is even more tricky
 	if strings.HasPrefix(imp, "@/") {
@@ -152,6 +171,27 @@ func normaliseImports(imp string, pkgDir string) string {
 
 	if strings.HasPrefix(imp, "~~/") {
 		return imp[3:]
+	}
+
+	if strings.HasPrefix(imp, "~/") {
+		// TODO: Figure out if we want to ignore any config files found at root
+		l, err := findJsConfig("nuxt", ix, from)
+		configFound := "nuxt"
+		if err != nil {
+			l, err = findJsConfig("vue", ix, from)
+			configFound = "vue"
+		}
+
+		if err == nil {
+			basePath := path.Dir(l.Rel(from.Repo, from.Pkg).String())
+
+			// TODO: Do not hardcode the basePath for the vueConfig but actually check if a src directory is present
+			// at basePath
+			if configFound == "vue" {
+				basePath = path.Join(basePath, "src")
+			}
+			return path.Join(basePath, imp)
+		}
 	}
 
 	if strings.HasPrefix(imp, "../") {

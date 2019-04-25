@@ -2,6 +2,9 @@ package gazelle
 
 import (
 	"testing"
+
+	"github.com/bazelbuild/bazel-gazelle/label"
+	"github.com/bazelbuild/bazel-gazelle/resolve"
 )
 
 const (
@@ -33,7 +36,7 @@ func TestNormalisePath(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			got := normaliseImports(tc.path, pkgDir)
+			got := normaliseImports(tc.path, &resolve.RuleIndex{}, label.New("repo", pkgDir, "name"))
 
 			if got != tc.want {
 				t.Errorf("Inequalith.\ngot  %#v;\nwant %#v", got, tc.want)
