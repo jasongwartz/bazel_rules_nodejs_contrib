@@ -53,6 +53,17 @@ func (s *jslang) Kinds() map[string]rule.KindInfo {
 			},
 			ResolveAttrs: map[string]bool{"deps": true},
 		},
+		"jest_node_test": {
+			MatchAny: false,
+			NonEmptyAttrs: map[string]bool{
+				"srcs": true,
+				"deps": true,
+			},
+			MergeableAttrs: map[string]bool{
+				"srcs": true,
+			},
+			ResolveAttrs: map[string]bool{"deps": true},
+		},
 	}
 }
 
@@ -63,7 +74,7 @@ func (s *jslang) Loads() []rule.LoadInfo {
 	return []rule.LoadInfo{
 		{
 			Name:    "@ecosia_bazel_rules_nodejs_contrib//:defs.bzl",
-			Symbols: []string{"js_library"},
+			Symbols: []string{"js_library", "jest_node_test"},
 		},
 	}
 }
@@ -120,7 +131,11 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 		imports = append(imports, fileInfo.Imports)
 
 		if strings.HasSuffix(path.Base(f), ".test.js") {
-			// ignore this for now
+			rule := rule.NewRule("jest_node_test", base)
+			rule.SetAttr("srcs", []string{f})
+			// TODO: Ideally we would not just apply public visibility
+			rule.SetAttr("visibility", []string{"//visibility:public"})
+			rules = append(rules, rule)
 		} else {
 			rule := rule.NewRule("js_library", base)
 			rule.SetAttr("srcs", []string{f})

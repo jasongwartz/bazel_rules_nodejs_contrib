@@ -83,7 +83,7 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 	r.DelAttr("deps")
 	depSet := make(map[string]bool)
 	for _, imp := range imports {
-		imp = normaliseImports(imp)
+		imp = normaliseImports(imp, from.Pkg)
 		l, err := resolveWithIndex(ix, imp, from)
 		if err == skipImportError {
 			continue
@@ -120,7 +120,7 @@ func isNpmDependency(imp string) bool {
 }
 
 // normaliseImports ensures that relative imports or alias imports can all resolve to the same file
-func normaliseImports(imp string) string {
+func normaliseImports(imp string, pkgDir string) string {
 	// TODO: Right now we assume @/ and ~~ to simply be an alias for imports from the root, but that might not be true.
 	// Also need to support ~ aliases which is even more tricky
 	if strings.HasPrefix(imp, "@/") {
@@ -129,6 +129,14 @@ func normaliseImports(imp string) string {
 
 	if strings.HasPrefix(imp, "~~/") {
 		return imp[3:]
+	}
+
+	if strings.HasPrefix(imp, "../") {
+		return path.Join(pkgDir, imp)
+	}
+
+	if strings.HasPrefix(imp, "./") {
+		return path.Join(pkgDir, imp)
 	}
 
 	return imp

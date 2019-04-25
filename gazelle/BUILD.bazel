@@ -26,6 +26,7 @@ go_test(
     srcs = [
         "fileinfo_test.go",
         "gazellebinary_test.go",
+        "resolver_test.go",
     ],
     args = ["-gazelle=$(location :gazelle_js)"],
     data = [":gazelle_js"],

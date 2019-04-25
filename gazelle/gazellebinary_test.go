@@ -39,12 +39,21 @@ import colors from "@/shared/colors";
 
 const date = format(new Date(2014, 0, 24), 'MM/DD/YYYY');
 console.log(date + fonts + colors);
+export default date;
 `},
 		{Path: "shared/fonts.js", Content: `
 export default "Helvetica";
 `},
 		{Path: "shared/colors.js", Content: `
 export default "Green";
+`},
+		{Path: "shared/colors.test.js", Content: `
+import { something } from '@test/utils';
+
+import colors from './colors';
+import date from '../hello_world/main';
+
+// Imagine some tests here
 `},
 	}
 )
@@ -95,12 +104,23 @@ js_library(
 )`,
 	}, {
 		Path: "shared/BUILD.bazel",
-		Content: `load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "js_library")
+		Content: `load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "jest_node_test", "js_library")
 
 js_library(
     name = "colors",
     srcs = ["colors.js"],
     visibility = ["//visibility:public"],
+)
+
+jest_node_test(
+    name = "colors.test",
+    srcs = ["colors.test.js"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":colors",
+        "//hello_world:main",
+        "@npm//@test/utils",
+    ],
 )
 
 js_library(

@@ -75,7 +75,7 @@ _jest_node_test = rule(
 )
 
 def jest_node_test(name, srcs, config, jest, **kwargs):
-    data = kwargs.pop("data", []) + srcs + [config]
+    data = kwargs.pop("data", []) + srcs + [config] + kwargs.pop("deps", [])
     env = kwargs.pop("env", {})
     tags = kwargs.pop("tags", [])
     visibility = kwargs.pop("visibility", [])
