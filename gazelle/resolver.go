@@ -126,7 +126,6 @@ func findJestConfig(ix *resolve.RuleIndex, from label.Label) (label.Label, error
 	pkgDir := from.Pkg
 	for pkgDir != ".." {
 		imp := path.Join(pkgDir, "jest.config")
-		log.Println(imp)
 		label, err := resolveWithIndex(ix, imp, from)
 		if err == nil {
 			return label, err
