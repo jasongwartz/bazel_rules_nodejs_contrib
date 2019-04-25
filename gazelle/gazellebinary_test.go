@@ -31,27 +31,20 @@ var (
 	baseFiles   = []testtools.FileSpec{
 		{Path: "WORKSPACE"},
 		//{Path: "BUILD.bazel"},
-		{Path: "hello_world/main.scss", Content: `
-@import "shared/fonts";
-@import "shared/colors";
+		{Path: "hello_world/main.js", Content: `
+import {format} from "date-fns";
 
-html {
-  body {
-    font-family: $default-font-stack;
-    h1 {
-      font-family: $modern-font-stack;
-      color: $example-red;
-    }
-  }
-}
+import fonts from "~~/shared/fonts";
+import colors from "@/shared/colors";
+
+const date = format(new Date(2014, 0, 24), 'MM/DD/YYYY');
+console.log(date + fonts + colors);
 `},
-		{Path: "shared/_fonts.scss", Content: `
-$default-font-stack: Cambria, "Hoefler Text", serif;
-$modern-font-stack: Constantia, "Lucida Bright", serif;
+		{Path: "shared/fonts.js", Content: `
+export default "Helvetica";
 `},
-		{Path: "shared/_colors.scss", Content: `
-$example-blue: #0000ff;
-$example-red: #ff0000;
+		{Path: "shared/colors.js", Content: `
+export default "Green";
 `},
 	}
 )
@@ -88,29 +81,31 @@ func TestGazelleBinary(t *testing.T) {
 
 	testtools.CheckFiles(t, dir, []testtools.FileSpec{{
 		Path: "hello_world/BUILD.bazel",
-		Content: `load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+		Content: `load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "js_library")
 
-sass_binary(
-    name = "hello_world",
-    src = "main.scss",
+js_library(
+    name = "main",
+    srcs = ["main.js"],
+    visibility = ["//visibility:public"],
     deps = [
         "//shared:colors",
         "//shared:fonts",
+        "@npm//date-fns",
     ],
 )`,
 	}, {
 		Path: "shared/BUILD.bazel",
-		Content: `load("@io_bazel_rules_sass//:defs.bzl", "sass_library")
+		Content: `load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "js_library")
 
-sass_library(
+js_library(
     name = "colors",
-    srcs = ["_colors.scss"],
+    srcs = ["colors.js"],
     visibility = ["//visibility:public"],
 )
 
-sass_library(
+js_library(
     name = "fonts",
-    srcs = ["_fonts.scss"],
+    srcs = ["fonts.js"],
     visibility = ["//visibility:public"],
 )
 `,

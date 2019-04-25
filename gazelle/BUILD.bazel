@@ -30,7 +30,7 @@ go_test(
     args = ["-gazelle=$(location :gazelle_js)"],
     data = [":gazelle_js"],
     embed = [":go_default_library"],
-    importpath = "github.com/bazelbuild/rules_sass/gazelle",
+    importpath = "github.com/ecosia/bazel_rules_nodejs_contrib/gazelle",
     rundir = ".",
     deps = ["@bazel_gazelle//testtools:go_default_library"],
 )
@@ -39,6 +39,6 @@ gazelle_binary(
     name = "gazelle_js",
     # keep
     languages = [
-        "//gazelle:go_default_library",
+        "@ecosia_bazel_rules_nodejs_contrib//gazelle:go_default_library",
     ],
 )

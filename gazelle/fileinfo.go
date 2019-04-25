@@ -33,7 +33,7 @@ type FileInfo struct {
 	Imports []string
 }
 
-var jsRe = buildProtoRegexp()
+var jsRe = buildJsRegexp()
 
 // jsFileinfo takes a dir and file name and parses the js file into
 // the constituent components, extracting metadata like the set of
@@ -53,7 +53,7 @@ func jsFileinfo(dir, name string) FileInfo {
 		switch {
 		case match[importSubexpIndex] != nil:
 			imp := match[importSubexpIndex]
-			info.Imports = append(info.Imports, strings.ToLower(string(imp)))
+			info.Imports = append(info.Imports, strings.ToLower(unquoteImportString(imp)))
 
 		default:
 			// Comment matched. Nothing to extract.
@@ -64,9 +64,9 @@ func jsFileinfo(dir, name string) FileInfo {
 	return info
 }
 
-// unquoteSASSString takes a string that has a complex quoting around it
+// unquoteImportString takes a string that has a complex quoting around it
 // and returns a string without the complex quoting.
-func unquoteSASSString(q []byte) string {
+func unquoteImportString(q []byte) string {
 	// Adjust quotes so that Unquote is happy. We need a double quoted string
 	// without unescaped double quote characters inside.
 	noQuotes := bytes.Split(q[1:len(q)-1], []byte{'"'})
@@ -95,14 +95,16 @@ const (
 	importSubexpIndex = 1
 )
 
-func buildProtoRegexp() *regexp.Regexp {
+func buildJsRegexp() *regexp.Regexp {
 	// hexEscape := `\\[xX][0-9a-fA-f]{2}`
-	// octEscape := `\\[0-7]{3}`
+	// // octEscape := `\\[0-7]{3}`
 	// charEscape := `\\[abfnrtv'"\\]`
 	// charValue := strings.Join([]string{hexEscape, octEscape, charEscape, "[^\x00\\'\\\"\\\\]"}, "|")
 	// strLit := `'(?:` + charValue + `|")*'|"(?:` + charValue + `|')*"`
 	// importStmt := `\bimport\s*(?P<import>` + strLit + `)\s*;`
-	importStmt := `\bimport.+'(?P<import>.+)'.*`
+	charValue := ".+"
+	strLit := `'(?:` + charValue + `|")*'|"(?:` + charValue + `|')*"`
+	importStmt := `\bimport.+(?P<import>` + strLit + `).*`
 	jsReSrc := strings.Join([]string{importStmt}, "|")
 	return regexp.MustCompile(jsReSrc)
 }

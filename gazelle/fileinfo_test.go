@@ -30,50 +30,50 @@ func TestJsRegexpGroupNames(t *testing.T) {
 	}
 	for name, index := range nameMap {
 		if names[index] != name {
-			t.Errorf("sass regexp subexp %d is %s ; want %s", index, names[index], name)
+			t.Errorf("js regexp subexp %d is %s ; want %s", index, names[index], name)
 		}
 	}
 	if len(names)-1 != len(nameMap) {
-		t.Errorf("sass regexp has %d groups ; want %d", len(names), len(nameMap))
+		t.Errorf("js regexp has %d groups ; want %d", len(names), len(nameMap))
 	}
 }
 
 func TestJsFileInfo(t *testing.T) {
 	for _, tc := range []struct {
-		desc, name, sass string
+		desc, name, js string
 		want             FileInfo
 	}{
 		{
 			desc: "empty",
-			name: "empty^file.sass",
-			sass: "",
+			name: "empty^file.js",
+			js: "",
 			want: FileInfo{},
 		}, {
 			desc: "import single quote",
-			name: "single.sass",
-			sass: `import 'single';`,
+			name: "single.js",
+			js: `import dateFns from 'date-fns';`,
 			want: FileInfo{
-				Imports: []string{"single"},
+				Imports: []string{"date-fns"},
 			},
 		}, {
 			desc: "import double quote",
 			name: "double.sass",
-			sass: `import "double";`,
+			js: `import dateFns from "date-fns";`,
 			want: FileInfo{
-				Imports: []string{"double"},
+				Imports: []string{"date-fns"},
 			},
 		}, {
 			desc: "import two",
 			name: "two.sass",
-			sass: `import "first";
-import "second";`,
+			js: `import {format} from 'date-fns'
+import Puppy from '@/components/Puppy';`,
 			want: FileInfo{
-				Imports: []string{"first", "second"},
+				Imports: []string{"@/components/puppy", "date-fns"},
 			},
 		}, {
 			desc: "import depth",
 			name: "deep.sass",
-			sass: `import "from/internal/package";`,
+			js: `import package from "from/internal/package";`,
 			want: FileInfo{
 				Imports: []string{"from/internal/package"},
 			},
@@ -85,7 +85,7 @@ import "second";`,
 				t.Fatal(err)
 			}
 			defer os.RemoveAll(dir)
-			if err := ioutil.WriteFile(filepath.Join(dir, tc.name), []byte(tc.sass), 0600); err != nil {
+			if err := ioutil.WriteFile(filepath.Join(dir, tc.name), []byte(tc.js), 0600); err != nil {
 				t.Fatal(err)
 			}
 

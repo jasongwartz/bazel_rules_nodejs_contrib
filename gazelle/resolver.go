@@ -57,7 +57,7 @@ func (s *jslang) Imports(c *config.Config, r *rule.Rule, f *rule.File) []resolve
 		withoutSuffix := strings.TrimSuffix(src, path.Ext(src))
 		imports[i] = resolve.ImportSpec{
 			Lang: "js",
-			Imp:  strings.ToLower(path.Join("@/", rel, withoutSuffix)),
+			Imp:  strings.ToLower(path.Join(rel, withoutSuffix)),
 		}
 	}
 	return imports
@@ -83,14 +83,18 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 	r.DelAttr("deps")
 	depSet := make(map[string]bool)
 	for _, imp := range imports {
+		imp = normaliseImports(imp)
 		l, err := resolveWithIndex(ix, imp, from)
 		if err == skipImportError {
 			continue
 		} else if err == notFoundError {
 			// npm dependencies are currently not part of the index and would return this error
-			// TODO: Check that we are actually having an module import here and not just assume it
-			log.Printf("Import %v not found, assuming npm dependency.\n", imp)
-			depSet["@npm//"+imp] = true
+			// TODO: Find some way to customise the name of the npm repository. Or maybe this can be fixed somehow by indexing external deps?
+			if isNpmDependency(imp) {
+				depSet["@npm//"+imp] = true
+			} else {
+				log.Printf("Import %v not found.\n", imp)
+			}
 		} else if err != nil {
 			log.Print(err)
 		} else {
@@ -106,6 +110,28 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 		sort.Strings(deps)
 		r.SetAttr("deps", deps)
 	}
+}
+
+// Taken from https://nodejs.org/api/modules.html#modules_all_together and extended by some common aliases to make sure
+// we do not accidentally treat them as an npm package
+func isNpmDependency(imp string) bool {
+	isSourceDep := strings.HasPrefix(imp, "./") || strings.HasPrefix(imp, "/") || strings.HasPrefix(imp, "../") || strings.HasPrefix(imp, "~/") || strings.HasPrefix(imp, "@/") || strings.HasPrefix(imp, "~~/")
+	return !isSourceDep
+}
+
+// normaliseImports ensures that relative imports or alias imports can all resolve to the same file
+func normaliseImports(imp string) string {
+	// TODO: Right now we assume @/ and ~~ to simply be an alias for imports from the root, but that might not be true.
+	// Also need to support ~ aliases which is even more tricky
+	if strings.HasPrefix(imp, "@/") {
+		return imp[2:]
+	}
+
+	if strings.HasPrefix(imp, "~~/") {
+		return imp[3:]
+	}
+
+	return imp
 }
 
 func resolveWithIndex(ix *resolve.RuleIndex, imp string, from label.Label) (label.Label, error) {
