@@ -7,18 +7,17 @@ vue_component(
     src = "mycomponent.vue",
 )
 
-
 dev_bundle(
-  name = "dev_bundle",
-  entry_point = "index.js",
-  srcs = [
-    "index.js",
-    "lib.js",
-    "msg.js",
-  ],
-  deps = [
-    ":mycomponent",
-  ]
+    name = "dev_bundle",
+    entry_point = "index.js",
+    srcs = [
+        "index.js",
+        "lib.js",
+        "msg.js",
+    ],
+    deps = [
+        ":mycomponent",
+    ],
 )
 
 js_devserver(
@@ -26,6 +25,6 @@ js_devserver(
     entry_point = "examples/dev_bundle/dev_bundle.js",
     serving_path = "/bundle.js",
     deps = [
-      ":dev_bundle",
+        ":dev_bundle",
     ],
 )

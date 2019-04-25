@@ -4,7 +4,7 @@ load("//examples/nodejs_jest_test:jest.bzl", "nodejs_jest_test")
 vue_component(
     name = "component",
     src = "component.vue",
-    out = "component"
+    out = "component",
 )
 
 nodejs_jest_test(
@@ -13,7 +13,7 @@ nodejs_jest_test(
     deps = [
         ":component",
     ],
-    tags = ["ibazel_notify_changes"]
+    tags = ["ibazel_notify_changes"],
 )
 
 nodejs_jest_test(
@@ -22,5 +22,5 @@ nodejs_jest_test(
     deps = [
         "sum.js",
     ],
-    tags = ["ibazel_notify_changes"]
+    tags = ["ibazel_notify_changes"],
 )

@@ -20,7 +20,7 @@ and uses babel to compile them for runtimes of today. It also brings
 compatibility with rules_typescript.
 """
 
-load("@bazel_skylib//:lib.bzl", "paths")
+load("@bazel_skylib//lib:paths.bzl", "paths")
 
 _DEFAULT_BABEL_BIN = "@npm//@bazel/babel/bin:babel"
 
