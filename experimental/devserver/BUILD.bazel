@@ -6,7 +6,7 @@ go_library(
         "main.go",
         "server.go",
     ],
-    importpath = "github.com/example/project/experimental/devserver",
+    importpath = "github.com/ecosia/bazel_rules_nodejs_contrib/experimental/devserver",
     visibility = ["//visibility:private"],
 )
 

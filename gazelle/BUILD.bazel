@@ -9,7 +9,7 @@ go_library(
         "js.go",
         "resolver.go",
     ],
-    importpath = "github.com/Vinesse/puppy_nuxt_app/gazelle",
+    importpath = "github.com/ecosia/bazel_rules_nodejs_contrib/gazelle",
     visibility = ["//visibility:public"],
     deps = [
         "@bazel_gazelle//config:go_default_library",
