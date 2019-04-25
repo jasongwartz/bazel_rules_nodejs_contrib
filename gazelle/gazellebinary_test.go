@@ -30,7 +30,7 @@ var (
 	gazellePath = flag.String("gazelle", "", "path to gazelle binary")
 	baseFiles   = []testtools.FileSpec{
 		{Path: "WORKSPACE"},
-		//{Path: "BUILD.bazel"},
+		{Path: "jest.config.js"},
 		{Path: "hello_world/main.js", Content: `
 import {format} from "date-fns";
 
