@@ -89,6 +89,15 @@ func TestGazelleBinary(t *testing.T) {
 	}
 
 	testtools.CheckFiles(t, dir, []testtools.FileSpec{{
+		Path: "BUILD.bazel",
+		Content: `load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "js_library")
+
+js_library(
+    name = "jest.config",
+    srcs = ["jest.config.js"],
+    visibility = ["//visibility:public"],
+)`,
+	},{
 		Path: "hello_world/BUILD.bazel",
 		Content: `load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "js_library")
 
