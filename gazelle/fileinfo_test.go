@@ -27,6 +27,7 @@ func TestJsRegexpGroupNames(t *testing.T) {
 	names := jsRe.SubexpNames()
 	nameMap := map[string]int{
 		"import": importSubexpIndex,
+		"require": requireSubexpIndex,
 	}
 	for name, index := range nameMap {
 		if names[index] != name {
@@ -78,8 +79,8 @@ import Puppy from '@/components/Puppy';`,
 				Imports: []string{"from/internal/package"},
 			},
 		}, {
-			desc: "import depth",
-			name: "deep.sass",
+			desc: "import multiline",
+			name: "multiline.js",
 			js: `import {format} from 'date-fns'
 import {
 	CONST1,
@@ -88,6 +89,14 @@ import {
 } from '~/constants';`,
 			want: FileInfo{
 				Imports: []string{"date-fns", "~/constants"},
+			},
+		},
+		{
+			desc: "simple require",
+			name: "require.js",
+			js: `const a = require("date-fns");`,
+			want: FileInfo{
+				Imports: []string{"date-fns"},
 			},
 		},
 	} {

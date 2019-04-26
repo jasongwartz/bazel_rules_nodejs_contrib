@@ -124,7 +124,7 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 		fileInfo := jsFileinfo(args.Dir, f)
 		imports = append(imports, fileInfo.Imports)
 
-		if strings.HasSuffix(path.Base(f), ".test.js") {
+		if strings.HasSuffix(path.Base(f), ".test.js") && !strings.HasSuffix(path.Base(f), "e2e.test.js") {
 			rule := rule.NewRule("jest_node_test", base)
 			rule.SetAttr("srcs", []string{f})
 			rule.SetAttr("entry_point", "jest-cli/bin/jest.js")
