@@ -44,6 +44,8 @@ export default date;
 `},
 		{Path: "shared/fonts.js", Content: `
 export default "Helvetica";
+import ArrowLeft from '../hello_world/arrow-left.svg';
+import Close from '../hello_world/close.svg?inline';
 `},
 		{Path: "shared/colors.js", Content: `
 export default "Green";

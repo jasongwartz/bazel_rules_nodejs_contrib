@@ -124,8 +124,8 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 	r.DelAttr("deps")
 	depSet := make(map[string]bool)
 	for _, imp := range imports {
-		imp = normaliseImports(imp, ix, from)
-		l, err := resolveWithIndex(ix, imp, from)
+		normalisedImp := normaliseImports(imp, ix, from)
+		l, err := resolveWithIndex(ix, normalisedImp, from)
 		if err == skipImportError {
 			continue
 		} else if err == notFoundError {
