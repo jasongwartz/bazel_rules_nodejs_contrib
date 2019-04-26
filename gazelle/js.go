@@ -122,13 +122,6 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 		}
 
 		fileInfo := jsFileinfo(args.Dir, f)
-		// if err != nil {
-		// 	panic(fmt.Sprintf("Fatal error"))
-		// }
-
-		// for err := range fileInfo.Errors {
-		// 	log.Printf("Error parsing %s: %s\n", fileInfo.Name, err)
-		// }
 		imports = append(imports, fileInfo.Imports)
 
 		if strings.HasSuffix(path.Base(f), ".test.js") {
@@ -146,36 +139,6 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 			rule.SetAttr("visibility", []string{"//visibility:public"})
 			rules = append(rules, rule)
 		}
-
-		// The primary entrypoint on Sass is a main.scss file.
-		// 	if f == "main.scss" {
-		// 		rule := rule.NewRule("sass_binary", base)
-
-		// 		rule.SetAttr("src", "main.scss")
-		// 		rules = append(rules, rule)
-		// 	} else if strings.HasPrefix(path.Base(f), "_") {
-		// 		// Libraries in Sass have filenames that start with _.
-		// 		// For each file in the dir with a leading "_" create a new sass_library
-		// 		rule := rule.NewRule("sass_library", base[1:len(base)-5])
-
-		// 		rule.SetAttr("srcs", []string{base})
-		// 		rule.SetPrivateAttr(config.GazelleImportsKey, fileInfo.Imports)
-
-		// 		// These rules should always be public
-		// 		rule.SetAttr("visibility", []string{"//visibility:public"})
-
-		// 		rules = append(rules, rule)
-		// 	} else {
-		// 		normalFiles = append(normalFiles, f)
-		// 	}
-		// }
-
-		// if len(normalFiles) > 0 {
-		// 	rule := rule.NewRule("sass_library", base)
-
-		// 	rule.SetAttr("srcs", normalFiles)
-
-		// 	rules = append(rules, rule)
 	}
 
 	return language.GenerateResult{

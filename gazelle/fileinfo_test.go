@@ -77,6 +77,18 @@ import Puppy from '@/components/Puppy';`,
 			want: FileInfo{
 				Imports: []string{"from/internal/package"},
 			},
+		}, {
+			desc: "import depth",
+			name: "deep.sass",
+			js: `import {format} from 'date-fns'
+import {
+	CONST1,
+	CONST2,
+	CONST3,
+} from '~/constants';`,
+			want: FileInfo{
+				Imports: []string{"date-fns", "~/constants"},
+			},
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {

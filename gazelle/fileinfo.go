@@ -95,6 +95,7 @@ const (
 	importSubexpIndex = 1
 )
 
+// TODO: Correctly filter out comments
 func buildJsRegexp() *regexp.Regexp {
 	// hexEscape := `\\[xX][0-9a-fA-f]{2}`
 	// // octEscape := `\\[0-7]{3}`
@@ -104,7 +105,7 @@ func buildJsRegexp() *regexp.Regexp {
 	// importStmt := `\bimport\s*(?P<import>` + strLit + `)\s*;`
 	charValue := ".+"
 	strLit := `'(?:` + charValue + `|")*'|"(?:` + charValue + `|')*"`
-	importStmt := `\bimport.+(?P<import>` + strLit + `).*`
+	importStmt := `\bimport(?:.|\n)+?(?P<import>` + strLit + `).*`
 	jsReSrc := strings.Join([]string{importStmt}, "|")
 	return regexp.MustCompile(jsReSrc)
 }

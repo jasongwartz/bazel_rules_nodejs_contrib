@@ -118,7 +118,7 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 	if r.Kind() == "jest_node_test" {
 		l, err := findJsConfig("jest", ix, from)
 		if err != nil {
-			log.Printf("Jest config %v", err)
+			log.Printf("Jest config for %v %v", from.Abs(from.Repo, from.Pkg).String(), err)
 		} else {
 			l = l.Rel(from.Repo, from.Pkg)
 			r.SetAttr("config", l.String())
@@ -131,19 +131,6 @@ func findJsConfig(configName string, ix *resolve.RuleIndex, from label.Label) (l
 	pkgDir := from.Pkg
 	for pkgDir != ".." {
 		imp := path.Join(pkgDir, configName+".config")
-		label, err := resolveWithIndex(ix, imp, from)
-		if err == nil {
-			return label, err
-		}
-		pkgDir = path.Join(pkgDir, "..")
-	}
-	return label.NoLabel, notFoundError
-}
-
-func findVueConfig(ix *resolve.RuleIndex, from label.Label) (label.Label, error) {
-	pkgDir := from.Pkg
-	for pkgDir != ".." {
-		imp := path.Join(pkgDir, "vue.config")
 		label, err := resolveWithIndex(ix, imp, from)
 		if err == nil {
 			return label, err
@@ -183,14 +170,14 @@ func normaliseImports(imp string, ix *resolve.RuleIndex, from label.Label) strin
 		}
 
 		if err == nil {
-			basePath := path.Dir(l.Rel(from.Repo, from.Pkg).String())
+			basePath := l.Pkg
 
 			// TODO: Do not hardcode the basePath for the vueConfig but actually check if a src directory is present
 			// at basePath
 			if configFound == "vue" {
 				basePath = path.Join(basePath, "src")
 			}
-			return path.Join(basePath, imp)
+			return path.Join(basePath, imp[2:])
 		}
 	}
 
