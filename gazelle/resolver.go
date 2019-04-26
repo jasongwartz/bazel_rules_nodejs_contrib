@@ -149,7 +149,6 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 				}
 				// In our vue components we also allow the import of svg files so we should handle them
 				l = label.New(from.Repo, path.Dir(normalisedImp), path.Base(normalisedImp))
-				log.Println(l.String)
 				depSet[l.String()] = true
 			} else if !isBuiltinModule {
 				log.Printf("Import %v not found.\n", imp)

@@ -31,7 +31,9 @@ var (
 	baseFiles   = []testtools.FileSpec{
 		{Path: "WORKSPACE"},
 		{Path: "jest.config.js"},
-		{Path: "jest.config.js"},
+		{Path: "hello_world/BUILD.bazel", Content:`
+export_files(glob(*.svg))
+`},
 		{Path: "hello_world/arrow-left.svg"},
 		{Path: "hello_world/close.svg"},
 		{Path: "hello_world/main.js", Content: `
