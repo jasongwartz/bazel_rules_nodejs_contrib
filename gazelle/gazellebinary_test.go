@@ -32,6 +32,7 @@ var (
 		{Path: "WORKSPACE"},
 		{Path: "jest.config.js"},
 		{Path: "hello_world/main.js", Content: `
+import path from "path";
 import {format} from "date-fns";
 
 import fonts from "~~/shared/fonts";

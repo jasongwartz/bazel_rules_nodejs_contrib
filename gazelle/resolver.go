@@ -35,6 +35,47 @@ var _ = fmt.Printf
 var (
 	skipImportError = errors.New("std import")
 	notFoundError   = errors.New("not found")
+	// builtinModule list taken from https://github.com/sindresorhus/builtin-modules/blob/master/builtin-modules.json
+	builtinModules = []string{
+		"assert",
+		"async_hooks",
+		"buffer",
+		"child_process",
+		"cluster",
+		"console",
+		"constants",
+		"crypto",
+		"dgram",
+		"dns",
+		"domain",
+		"events",
+		"fs",
+		"http",
+		"http2",
+		"https",
+		"inspector",
+		"module",
+		"net",
+		"os",
+		"path",
+		"perf_hooks",
+		"process",
+		"punycode",
+		"querystring",
+		"readline",
+		"repl",
+		"stream",
+		"string_decoder",
+		"timers",
+		"tls",
+		"trace_events",
+		"tty",
+		"url",
+		"util",
+		"v8",
+		"vm",
+		"zlib",
+	}
 )
 
 // Name returns the name of the language. This should be a prefix of the
@@ -90,14 +131,17 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 		} else if err == notFoundError {
 			// npm dependencies are currently not part of the index and would return this error
 			// TODO: Find some way to customise the name of the npm repository. Or maybe this can be fixed somehow by indexing external deps?
-			if isNpmDependency(imp) {
+			sort.Strings(builtinModules)
+			i := sort.SearchStrings(builtinModules, imp)
+			isBuiltinModule := i < len(builtinModules) && builtinModules[i] == imp
+			if isNpmDependency(imp) && !isBuiltinModule {
 				s := strings.Split(imp, "/")
 				imp = s[0]
 				if strings.HasPrefix(imp, "@") {
 					imp += "/" + s[1]
 				}
 				depSet["@npm//"+imp] = true
-			} else {
+			} else if !isBuiltinModule {
 				log.Printf("Import %v not found.\n", imp)
 			}
 		} else if err != nil {

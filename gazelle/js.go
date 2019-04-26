@@ -117,7 +117,7 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 		base = strings.ToLower(path.Base(f))
 		base = strings.TrimSuffix(base, filepath.Ext(base))
 		// Only generate js entries for known js files (.vue/.js) - can probably be extended
-		if !strings.HasSuffix(f, ".vue") && !strings.HasSuffix(f, ".js") {
+		if !strings.HasSuffix(f, ".vue") && !strings.HasSuffix(f, ".js") || strings.HasSuffix(f, "k6.js") {
 			continue
 		}
 
