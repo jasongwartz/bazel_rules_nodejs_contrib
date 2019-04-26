@@ -32,7 +32,7 @@ var (
 		{Path: "WORKSPACE"},
 		{Path: "jest.config.js"},
 		{Path: "hello_world/BUILD.bazel", Content:`
-export_files(glob(*.svg))
+exports_files(glob(["*.svg"]))
 `},
 		{Path: "hello_world/arrow-left.svg"},
 		{Path: "hello_world/close.svg"},
@@ -108,6 +108,8 @@ js_library(
 	},{
 		Path: "hello_world/BUILD.bazel",
 		Content: `load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "js_library")
+
+exports_files(glob(["*.svg"]))
 
 js_library(
     name = "main",
