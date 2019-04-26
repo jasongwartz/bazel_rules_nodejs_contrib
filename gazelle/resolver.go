@@ -151,7 +151,7 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 				l = label.New(from.Repo, path.Dir(normalisedImp), path.Base(normalisedImp))
 				depSet[l.String()] = true
 			} else if !isBuiltinModule {
-				log.Printf("Import %v not found.\n", imp)
+				log.Printf("Import %v for %s not found.\n", imp, from.Abs(from.Repo, from.Pkg).String())
 			}
 		} else if err != nil {
 			log.Print(err)
