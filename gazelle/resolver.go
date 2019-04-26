@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"log"
 	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -129,7 +130,8 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 		if err == skipImportError {
 			continue
 		} else if err == notFoundError {
-			// npm dependencies are currently not part of the index and would return this error
+			// npm dependencies are currently not part of the index and would return this error, so resolv them here without any index
+			// just based on some heuristics
 			// TODO: Find some way to customise the name of the npm repository. Or maybe this can be fixed somehow by indexing external deps?
 			sort.Strings(builtinModules)
 			i := sort.SearchStrings(builtinModules, imp)
@@ -141,6 +143,14 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 					imp += "/" + s[1]
 				}
 				depSet["@npm//"+imp] = true
+			} else if filepath.Ext(normalisedImp) == ".svg" || filepath.Ext(normalisedImp) == ".svg?inline" {
+				if filepath.Ext(normalisedImp) == ".svg?inline" {
+					normalisedImp = normalisedImp[0 : len(normalisedImp)-7]
+				}
+				// In our vue components we also allow the import of svg files so we should handle them
+				l = label.New(from.Repo, path.Dir(normalisedImp), path.Base(normalisedImp))
+				log.Println(l.String)
+				depSet[l.String()] = true
 			} else if !isBuiltinModule {
 				log.Printf("Import %v not found.\n", imp)
 			}
@@ -193,6 +203,7 @@ func isNpmDependency(imp string) bool {
 
 // normaliseImports ensures that relative imports or alias imports can all resolve to the same file
 func normaliseImports(imp string, ix *resolve.RuleIndex, from label.Label) string {
+	// TODO: Should we also normalise imports that have an explicit '.js' file ending?
 	pkgDir := from.Pkg
 	// TODO: Right now we assume @/ and ~~ to simply be an alias for imports from the root, but that might not be true.
 	// Also need to support ~ aliases which is even more tricky

@@ -31,6 +31,9 @@ var (
 	baseFiles   = []testtools.FileSpec{
 		{Path: "WORKSPACE"},
 		{Path: "jest.config.js"},
+		{Path: "jest.config.js"},
+		{Path: "hello_world/arrow-left.svg"},
+		{Path: "hello_world/close.svg"},
 		{Path: "hello_world/main.js", Content: `
 import path from "path";
 import {format} from "date-fns";
@@ -141,6 +144,10 @@ js_library(
     name = "fonts",
     srcs = ["fonts.js"],
     visibility = ["//visibility:public"],
+    deps = [
+        "//hello_world:arrow-left.svg",
+        "//hello_world:close.svg",
+    ],
 )
 `,
 	}})
