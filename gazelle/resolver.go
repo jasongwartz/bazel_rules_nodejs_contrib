@@ -142,13 +142,10 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 				if strings.HasPrefix(imp, "@") {
 					imp += "/" + s[1]
 				}
-				depSet["@npm//"+imp] = true
+				depSet["@global-yarn//"+imp] = true
 			} else if filepath.Ext(normalisedImp) == ".svg" || filepath.Ext(normalisedImp) == ".svg?inline" {
-				if filepath.Ext(normalisedImp) == ".svg?inline" {
-					normalisedImp = normalisedImp[0 : len(normalisedImp)-7]
-				}
 				// In our vue components we also allow the import of svg files so we should handle them
-				l = label.New(from.Repo, path.Dir(normalisedImp), path.Base(normalisedImp))
+				l = label.New(from.Repo, path.Dir(normalisedImp), strings.TrimSuffix(path.Base(normalisedImp), filepath.Ext(normalisedImp)))
 				depSet[l.String()] = true
 			} else if !isBuiltinModule {
 				log.Printf("Import %v for %s not found.\n", imp, from.Abs(from.Repo, from.Pkg).String())
@@ -202,6 +199,7 @@ func isNpmDependency(imp string) bool {
 
 // normaliseImports ensures that relative imports or alias imports can all resolve to the same file
 func normaliseImports(imp string, ix *resolve.RuleIndex, from label.Label) string {
+	// TODO: Handle directory imports, i.e. import/path/dir -> import/path/dir/index.js or import/path/dir/index.vue
 	// TODO: Should we also normalise imports that have an explicit '.js' file ending?
 	pkgDir := from.Pkg
 	// TODO: Right now we assume @/ and ~~ to simply be an alias for imports from the root, but that might not be true.

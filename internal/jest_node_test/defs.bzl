@@ -12,6 +12,9 @@ def _jest_node_test_impl(ctx):
 
         {env}
 
+        export NODE_ENV=test
+        export NODE_PATH=external/global-yarn/node_modules
+
         ARGS="{config_args} --runTestsByPath "
 
         if [ $# -ne 0 ]; then
@@ -75,7 +78,7 @@ _jest_node_test = rule(
 )
 
 def jest_node_test(name, srcs, config, jest, **kwargs):
-    data = kwargs.pop("data", []) + srcs + [config] + kwargs.pop("deps", [])
+    data = kwargs.pop("data", []) + srcs + [config] + kwargs.pop("deps", []) + [jest]
     env = kwargs.pop("env", {})
     tags = kwargs.pop("tags", [])
     visibility = kwargs.pop("visibility", [])
@@ -86,6 +89,7 @@ def jest_node_test(name, srcs, config, jest, **kwargs):
         # Note: We do not want to run this target automatically as it will fail
         tags = ["manual"],
         visibility = ["//visibility:private"],
+        transitive_data_extension = "*",
         **kwargs
     )
 

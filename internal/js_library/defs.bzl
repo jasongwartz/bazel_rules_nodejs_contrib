@@ -1,9 +1,14 @@
 
+load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleInfo")
+
 def _collect_sources(ctx):
   es5_sources = depset(ctx.files.srcs)
   transitive_es5_sources = depset()
   transitive_es6_sources = depset()
   for dep in ctx.attr.deps:
+    # print("ctx.attr.name:", ctx.attr.name, "dep.label.name:", dep.label.name)
+    # if dep.label.name == "client":
+    #     print(dep.typescript.transitive_es5_sources)
     if hasattr(dep, "typescript"):
         transitive_es5_sources = depset(transitive = [
             transitive_es5_sources,
@@ -12,6 +17,15 @@ def _collect_sources(ctx):
         transitive_es6_sources = depset(transitive = [
             transitive_es6_sources,
             dep.typescript.transitive_es6_sources,
+        ])
+    elif not NodeModuleInfo in dep and hasattr(dep, "files"):
+        transitive_es5_sources = depset(transitive = [
+            transitive_es5_sources,
+            dep.files,
+        ])
+        transitive_es6_sources = depset(transitive = [
+            transitive_es6_sources,
+            dep.files,
         ])
 
   return struct(

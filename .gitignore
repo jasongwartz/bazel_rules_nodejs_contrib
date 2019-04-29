@@ -1,2 +1,5 @@
 bazel-*
 node_modules
+
+go.sum
+go.mod
