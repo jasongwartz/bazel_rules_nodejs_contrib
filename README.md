@@ -7,9 +7,9 @@ Ecosia specific JS Bazel rules to be used with the NodeJS rules
 # These rules depend on running Node.js
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.10.0.zip",
-    strip_prefix = "rules_nodejs-0.10.0",
-    sha256 = "2f77623311da8b5009b1c7eade12de8e15fa3cd2adf9dfcc9f87cb2082b2211f",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.27.12.tar.gz"],
+    strip_prefix = "rules_nodejs-0.27.12",
+    sha256 = "25dbb063a8a1a2b279d55ba158992ad61eb5266c416c77eb82a7d33b4eac533d",
 )
 
 http_archive(
@@ -52,6 +52,35 @@ Converts a vue component to an ES module with the css injected into the js.
 
 `vue_component(name, src)`
 
+### js_library
+
+A generic js_library rule that simlply provides transitive dependency support for bazelbuild/rules_nodejs
+
+`js_library(name, srcs, deps, module_name, module_root)`
+
+## Build file generation
+
+Build file generation is provided as a plugin for [gazelle](https://github.com/bazelbuild/bazel-gazelle) and still WIP and to a certain degree coupled to our internal js setup. It should not be difficult to extend / make it more generic though. It makes use of the `js_library` and `jest_node_test` provided in these rules.
+
+To setup the gazlle plugin follow the installation instructions provided by the repository and additionally add the following:
+
+```py
+gazelle(
+    name = "gazelle",
+    gazelle = ":gazelle_js",
+)
+
+gazelle_binary(
+    name = "gazelle_js",
+    # keep
+    languages = DEFAULT_LANGUAGES + [
+        "@ecosia_bazel_rules_nodejs_contrib//gazelle:go_default_library",
+    ],
+    visibility = [
+        "//visibility:public",
+    ],
+)
+```
 
 ## Contributions
 
