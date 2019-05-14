@@ -54,7 +54,7 @@ Converts a vue component to an ES module with the css injected into the js.
 
 ### js_library
 
-A generic js_library rule that simlply provides transitive dependency support for bazelbuild/rules_nodejs
+A generic js_library rule that provides transitive dependency support for `bazelbuild/rules_nodejs` as well as some basic interoperability with `ts_devserver`.
 
 `js_library(name, srcs, deps, module_name, module_root)`
 
