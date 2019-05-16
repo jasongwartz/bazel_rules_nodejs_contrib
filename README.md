@@ -67,7 +67,9 @@ A generic js_library rule that provides transitive dependency support for `bazel
 
 ### babel_library
 
-This rule provides compilation support with babel as well as transitive dependency support for `bazelbuild/rules_nodejs` and interoperability with `ts_devserver`.  The default label for the `babel` binary is `@npm//@bazel/babel/bin:babel` as it is eventually expected to be a hosted package. For now you can either create a `nodejs_binary` including the `babel.js` in your workspace or add a `file:` dependency into your `package.json` similar to the example provided here. If no custom `babelrc` is provided it defaults to `@babel/preset-env` with umd compilation the way `ts_devserver` expects.
+This rule provides compilation support with babel as well as transitive dependency support for `bazelbuild/rules_nodejs` and interoperability with `ts_devserver`.  
+
+The default label for the `babel` binary is `@npm//@bazel/babel/bin:babel` as it is eventually expected to be a hosted package. For now you can either create a `nodejs_binary` including the `babel.js` in your workspace or add a `file:` dependency into your `package.json` similar to the example provided here. If no custom `babelrc` is provided it defaults to `@babel/preset-env` with umd compilation the way `ts_devserver` expects.
 
 `babel_library(name, srcs, deps, data, module_name, module_root, babel, babelrc)`
 
