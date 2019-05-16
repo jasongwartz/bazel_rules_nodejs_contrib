@@ -58,6 +58,12 @@ A generic js_library rule that provides transitive dependency support for `bazel
 
 `js_library(name, srcs, deps, module_name, module_root)`
 
+### babel_library
+
+This rule provides compilation support with babel as well as transitive dependency support for `bazelbuild/rules_nodejs` and interoperability with `ts_devserver`.  The default label for the `babel` binary is `@npm//@bazel/babel/bin:babel` and if no custom `babelrc` is provided it defaults to `@babel/preset-env` with umd compilation the way `ts_devserver` expects.
+
+`babel_library(name, srcs, deps, data, module_name, module_root, babel, babelrc)`
+
 ## Build file generation
 
 Build file generation is provided as a plugin for [gazelle](https://github.com/bazelbuild/bazel-gazelle) and still WIP and to a certain degree coupled to our internal js setup. It should not be difficult to extend / make it more generic though. It makes use of the `js_library` and `jest_node_test` provided in these rules.
