@@ -46,6 +46,12 @@ Converts toml files to treeshakable ES modules
 
 `toml_to_js(name, srcs, strict)`
 
+### js_import
+
+Provides transitive dependcy support for custom files to be imported in js. Like svg or proto files that will get compiled to js by an upstream rule. This exists mostly for compatibility and migration reasons, as ideally each of these files would have ther own `x_to_js` or similar rules.
+
+`js_import(name, srcs)`
+
 ### vue_component
 
 Converts a vue component to an ES module with the css injected into the js.

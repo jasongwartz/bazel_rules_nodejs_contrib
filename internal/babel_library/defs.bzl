@@ -70,6 +70,10 @@ def _declare_babel_outputs(ctx, out_dir):
   return [ctx.actions.declare_file(paths.join(out_dir, _get_package_path(ctx, src))) for src in ctx.files.srcs]
 
 def _run_babel(ctx, inputs, outputs, args, mnemonic, description):
+  execution_requirements = {}
+  if ctx.attr.no_sandbox:
+    execution_requirements.update({ "no-sandbox": "0" })
+
   ctx.actions.run(
     executable = ctx.executable.babel,
     inputs = inputs,
@@ -77,7 +81,7 @@ def _run_babel(ctx, inputs, outputs, args, mnemonic, description):
     arguments = [args],
     mnemonic = mnemonic,
     progress_message = "Compiling Javascript (%s) %s" % (description, ctx.label),
-    execution_requirements = { "no-sandbox": ctx.attr.no_sandbox },
+    execution_requirements = execution_requirements,
   )
 
 def _babel_conversion(ctx, inputs, config, out_dir, mnemonic, description):
@@ -181,16 +185,16 @@ babel_library = rule(
         ),
         "_babelrc_tmpl": attr.label(
             allow_single_file = True,
-            default = Label("//internal/babel_library:babel.rc.js")
+            default = Label("@ecosia_bazel_rules_nodejs_contrib//internal/babel_library:babel.rc.js")
         ),
         "babelrc": attr.label(
             allow_single_file = True,
             mandatory = False,
             default = None,
         ),
-        "no_sandbox": attr.string(
-          doc = """The string value of no-sandbox in the execution_requirements dict of babelification""",
-          default = "0"
+        "no_sandbox": attr.bool(
+          doc = """Sets the no-sandbox execution_requirements dict of babelification""",
+          default = False,
         ),
     },
 )

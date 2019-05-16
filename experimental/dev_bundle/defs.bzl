@@ -50,11 +50,11 @@ def collect_sources(ctx):
 
 def _dev_bundle(ctx):
     args = ctx.actions.args()
-    args.add(["-E", "--map-inline"])
+    args.add_all(["-E", "--map-inline"])
     # Same issue as with the rerooting above
-    # args.add([ctx.file.entry_point.path])
-    args.add(["%s/%s" % (ctx.bin_dir.path, ctx.file.entry_point.short_path)])
-    args.add([ctx.outputs.build.path])
+    # args.add_all([ctx.file.entry_point.path])
+    args.add("%s/%s" % (ctx.bin_dir.path, ctx.file.entry_point.short_path))
+    args.add(ctx.outputs.build.path)
 
     sources = collect_sources(ctx)
     inputs = sources

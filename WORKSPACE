@@ -45,11 +45,23 @@ load("//:defs.bzl", "node_contrib_repositories")
 
 node_contrib_repositories()
 
+load("@build_bazel_rules_nodejs//:defs.bzl", "yarn_install")
+
+yarn_install(
+    name = "npm",
+    package_json = "@ecosia_bazel_rules_nodejs_contrib//examples/babel_library:package.json",
+    yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//examples/babel_library:yarn.lock",
+    data = [
+        "@ecosia_bazel_rules_nodejs_contrib//internal/babel_library:package.json",
+        "@ecosia_bazel_rules_nodejs_contrib//internal/babel_library:babel.js",
+    ],
+)
+
 http_archive(
     name = "pax",
-    url = "https://github.com/globegitter/pax/archive/5586438b4387d726afb4e113e8a5b08e5c6fd943.tar.gz",
-    strip_prefix = "pax-5586438b4387d726afb4e113e8a5b08e5c6fd943",
-    sha256 = "2934743e4f408c800c99b7553cd15ca64fa8c4ccb316fa9c72838500b2fed3d0",
+    urls = ["https://github.com/Globegitter/pax/archive/001d323ee1374a72ee71ebbaa72f9b032da9ebaf.tar.gz"],
+    strip_prefix = "pax-001d323ee1374a72ee71ebbaa72f9b032da9ebaf",
+    sha256 = "cf185793dafe4710be266d4aab488114388b0f8bcf74e19df72db6dbb03f0471",
 )
 
 http_archive(

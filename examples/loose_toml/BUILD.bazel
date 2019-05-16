@@ -1,4 +1,4 @@
-load("//:defs.bzl", "toml_to_js")
+load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "toml_to_js")
 
 toml_to_js(
     name = "loose_toml",

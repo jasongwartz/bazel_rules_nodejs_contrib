@@ -26,10 +26,10 @@ def _vue_component(ctx):
     )
     
     args = ctx.actions.args()
-    args.add(["--config", config.path])
-    args.add(["--output.file", build_js.path])
-    args.add(["--input", ctx.file.src.path])
-    args.add(["--silent"])
+    args.add_all(["--config", config.path])
+    args.add_all(["--output.file", build_js.path])
+    args.add_all(["--input", ctx.file.src.path])
+    args.add("--silent")
     ctx.actions.run(
         executable = ctx.executable._rollup,
         inputs = [ctx.file.src, config],

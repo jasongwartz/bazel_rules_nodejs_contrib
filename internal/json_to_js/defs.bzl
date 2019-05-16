@@ -16,7 +16,7 @@ def _json_to_js(ctx):
     outputs = [ctx.actions.declare_file(src.basename + ".js") for src in ctx.files.srcs]
     
     args = ctx.actions.args()
-    args.add(["--out-dir", ctx.bin_dir.path])
+    args.add_all(["--out-dir", ctx.bin_dir.path])
     args.add_all(ctx.files.srcs)
 
     ctx.actions.run(

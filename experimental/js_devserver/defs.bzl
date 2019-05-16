@@ -2,9 +2,9 @@ def _js_devserver(ctx):
     files = depset()
     for d in ctx.attr.deps:
         if hasattr(d, "node_sources"):
-            files += d.node_sources
+            files = depset(transitive=[d.node_sources, files])
         elif hasattr(d, "files"):
-            files += d.files
+            files = depset(transitive=[d.files, files])
 
     if ctx.label.workspace_root:
         # We need the workspace_name for the target being visited.
@@ -52,7 +52,7 @@ RUNFILES="$PWD/.."
             files = devserver_runfiles,
             # We don't expect executable targets to depend on the devserver, but if they do,
             # they can see the JavaScript code.
-            transitive_files = depset(ctx.files.data) + files,
+            transitive_files = depset(ctx.files.data, transitive=[files]),
             collect_data = True,
             collect_default = True,
         ),

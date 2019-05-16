@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "@bazel/babel": "file:./internal/babel_library"
+  }
+}

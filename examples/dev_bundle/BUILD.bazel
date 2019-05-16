@@ -1,6 +1,6 @@
-load("//experimental/dev_bundle:defs.bzl", "dev_bundle")
-load("//experimental/js_devserver:defs.bzl", "js_devserver")
-load("//:defs.bzl", "vue_component")
+load("@ecosia_bazel_rules_nodejs_contrib//experimental/dev_bundle:defs.bzl", "dev_bundle")
+load("@ecosia_bazel_rules_nodejs_contrib//experimental/js_devserver:defs.bzl", "js_devserver")
+load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "vue_component")
 
 vue_component(
     name = "mycomponent",

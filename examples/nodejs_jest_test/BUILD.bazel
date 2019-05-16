@@ -1,5 +1,5 @@
-load("//:defs.bzl", "vue_component")
-load("//examples/nodejs_jest_test:jest.bzl", "nodejs_jest_test")
+load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "vue_component")
+load("@ecosia_bazel_rules_nodejs_contrib//examples/nodejs_jest_test:jest.bzl", "nodejs_jest_test")
 
 vue_component(
     name = "component",
