@@ -21,4 +21,5 @@ def nodejs_jest_test_example_dependencies():
     name = "nodejs_jest_test_example_deps",
     package_json = "@ecosia_bazel_rules_nodejs_contrib//examples/nodejs_jest_test:package.json",
     yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//examples/nodejs_jest_test:yarn.lock",
+    exclude_packages = [],
   )

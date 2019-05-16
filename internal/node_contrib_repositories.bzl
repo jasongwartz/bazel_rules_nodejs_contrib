@@ -21,28 +21,33 @@ def node_contrib_repositories():
     name = "vue_component_deps",
     package_json = "@ecosia_bazel_rules_nodejs_contrib//internal/vue_component:package.json",
     yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//internal/vue_component:yarn.lock",
+    exclude_packages = [],
   )
 
   yarn_install(
     name = "toml_to_js_deps",
     package_json = "@ecosia_bazel_rules_nodejs_contrib//internal/toml_to_js:package.json",
     yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//internal/toml_to_js:yarn.lock",
+    exclude_packages = [],
   )
 
   yarn_install(
     name = "json_to_js_deps",
     package_json = "@ecosia_bazel_rules_nodejs_contrib//internal/json_to_js:package.json",
     yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//internal/json_to_js:yarn.lock",
+    exclude_packages = [],
   )
 
   yarn_install(
     name = "eslint_deps",
     package_json = "@ecosia_bazel_rules_nodejs_contrib//experimental/eslint:package.json",
     yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//experimental/eslint:yarn.lock",
+    exclude_packages = [],
   )
 
   yarn_install(
     name = "nuxt_build",
     package_json = "@ecosia_bazel_rules_nodejs_contrib//experimental/nuxt_build:package.json",
     yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//experimental/nuxt_build:yarn.lock",
+    exclude_packages = [],
   )
