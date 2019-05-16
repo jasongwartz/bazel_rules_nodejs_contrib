@@ -14,9 +14,9 @@ http_archive(
 
 http_archive(
     name = "ecosia_bazel_rules_nodejs_contrib",
-    urls = ["https://github.com/ecosia/bazel_rules_nodejs_contrib/archive/f43894079b285d0eb331903d67b32ffa59f8955f.tar.gz"],
-    strip_prefix = "bazel_rules_nodejs_contrib-f43894079b285d0eb331903d67b32ffa59f8955f",
-    sha256 = "4f10528a7072962e880572af8e771a9f6e09da40682f088580403da250dbbe79",
+    urls = ["https://github.com/ecosia/bazel_rules_nodejs_contrib/archive/03d2aaa741998b86eaec9d9339e9e70f6b2814c8.tar.gz"],
+    strip_prefix = "bazel_rules_nodejs_contrib-03d2aaa741998b86eaec9d9339e9e70f6b2814c8",
+    sha256 = "0cfa7423a513d166ef11b70c94d928c3c797fa1e34cba8374817bd9d3781e66d",
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories")
