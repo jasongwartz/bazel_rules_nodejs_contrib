@@ -77,9 +77,13 @@ The default label for the `babel` binary is `@npm//@bazel/babel/bin:babel` as it
 
 Build file generation is provided as a plugin for [gazelle](https://github.com/bazelbuild/bazel-gazelle) and still WIP and to a certain degree coupled to our internal js setup. It should not be difficult to extend / make it more generic though. It makes use of the `js_library` and `jest_node_test` provided in these rules.
 
-To setup the gazlle plugin follow the installation instructions provided by the repository and additionally add the following:
+To setup the gazlle plugin follow the installation instructions provided by the repository and additionally add the following to your root level `BUILD.bazel`:
 
 ```py
+load("@bazel_gazelle//:def.bzl", "gazelle", "gazelle_binary")
+
+# gazelle:exclude node_modules
+
 gazelle(
     name = "gazelle",
     gazelle = ":gazelle_js",
@@ -87,7 +91,6 @@ gazelle(
 
 gazelle_binary(
     name = "gazelle_js",
-    # keep
     languages = DEFAULT_LANGUAGES + [
         "@ecosia_bazel_rules_nodejs_contrib//gazelle:go_default_library",
     ],
