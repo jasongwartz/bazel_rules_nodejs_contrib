@@ -12,9 +12,6 @@ def _jest_node_test_impl(ctx):
 
         {env}
 
-        export NODE_ENV=test
-        export NODE_PATH=external/global-yarn/node_modules
-
         ARGS="{config_args} --runTestsByPath "
 
         if [ $# -ne 0 ]; then
