@@ -76,7 +76,10 @@ _jest_node_test = rule(
 
 def jest_node_test(name, srcs, config, jest, **kwargs):
     data = kwargs.pop("data", []) + srcs + [config] + kwargs.pop("deps", []) + [jest]
-    env = kwargs.pop("env", {})
+    env = kwargs.pop("env", {
+        "NODE_ENV" "test",
+        "NODE_PATH": "$(pwd)/../global-yarn/node_modules",
+    })
     tags = kwargs.pop("tags", [])
     visibility = kwargs.pop("visibility", [])
 
@@ -86,7 +89,6 @@ def jest_node_test(name, srcs, config, jest, **kwargs):
         # Note: We do not want to run this target automatically as it will fail
         tags = ["manual"],
         visibility = ["//visibility:private"],
-        transitive_data_extension = "*",
         **kwargs
     )
 
