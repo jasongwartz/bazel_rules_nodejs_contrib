@@ -31,17 +31,19 @@ var (
 	baseFiles   = []testtools.FileSpec{
 		{Path: "WORKSPACE"},
 		{Path: "jest.config.js"},
-		{Path: "hello_world/BUILD.bazel", Content:`
-exports_files(glob(["*.svg"]))
-`},
+		{Path: "hello_world/BUILD.bazel"},
 		{Path: "hello_world/arrow-left.svg"},
 		{Path: "hello_world/close.svg"},
+		{Path: "hello_world/index.js", Content: `
+export default "index";
+`},
 		{Path: "hello_world/main.js", Content: `
 import path from "path";
 import {format} from "date-fns";
 
 import fonts from "~~/shared/fonts";
 import colors from "@/shared/colors";
+import colors from "~~/shared";
 
 const date = format(new Date(2014, 0, 24), 'MM/DD/YYYY');
 console.log(date + fonts + colors);
@@ -51,6 +53,7 @@ export default date;
 export default "Helvetica";
 import ArrowLeft from '../hello_world/arrow-left.svg';
 import Close from '../hello_world/close.svg?inline';
+import Index from '../hello_world';
 `},
 		{Path: "shared/colors.js", Content: `
 export default "Green";
@@ -62,6 +65,9 @@ import colors from './colors';
 import date from '../hello_world/main';
 
 // Imagine some tests here
+`},
+		{Path: "shared/index.js", Content: `
+export default "Magic";
 `},
 	}
 )
@@ -105,11 +111,27 @@ js_library(
     srcs = ["jest.config.js"],
     visibility = ["//visibility:public"],
 )`,
-	},{
+	}, {
 		Path: "hello_world/BUILD.bazel",
-		Content: `load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "js_library")
+		Content: `load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "js_import", "js_library")
 
-exports_files(glob(["*.svg"]))
+js_import(
+    name = "arrow-left",
+    srcs = ["arrow-left.svg"],
+    visibility = ["//visibility:public"],
+)
+
+js_import(
+    name = "close",
+    srcs = ["close.svg"],
+    visibility = ["//visibility:public"],
+)
+
+js_library(
+    name = "index",
+    srcs = ["index.js"],
+    visibility = ["//visibility:public"],
+)
 
 js_library(
     name = "main",
@@ -118,9 +140,11 @@ js_library(
     deps = [
         "//shared:colors",
         "//shared:fonts",
+        "//shared:index",
         "@npm//date-fns",
     ],
-)`,
+)
+`,
 	}, {
 		Path: "shared/BUILD.bazel",
 		Content: `load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "jest_node_test", "js_library")
@@ -149,9 +173,16 @@ js_library(
     srcs = ["fonts.js"],
     visibility = ["//visibility:public"],
     deps = [
-        "//hello_world:arrow-left.svg",
-        "//hello_world:close.svg",
+        "//hello_world:arrow-left",
+        "//hello_world:close",
+        "//hello_world:index",
     ],
+)
+
+js_library(
+    name = "index",
+    srcs = ["index.js"],
+    visibility = ["//visibility:public"],
 )
 `,
 	}})

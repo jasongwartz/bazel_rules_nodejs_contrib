@@ -65,7 +65,7 @@ func (s *jslang) Kinds() map[string]rule.KindInfo {
 				"config": true,
 			},
 		},
-		"filegroup": {
+		"js_import": {
 			MatchAny: false,
 			NonEmptyAttrs: map[string]bool{
 				"srcs": true,
@@ -84,7 +84,7 @@ func (s *jslang) Loads() []rule.LoadInfo {
 	return []rule.LoadInfo{
 		{
 			Name:    "@ecosia_bazel_rules_nodejs_contrib//:defs.bzl",
-			Symbols: []string{"js_library", "jest_node_test"},
+			Symbols: []string{"js_library", "jest_node_test", "js_import"},
 		},
 	}
 }
@@ -125,9 +125,9 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 	for _, f := range append(args.RegularFiles, args.GenFiles...) {
 		base = strings.ToLower(path.Base(f))
 		base = strings.TrimSuffix(base, filepath.Ext(base))
-		// TODO: Think if we want some kind of svg support - maybe we can also generate some kind of js_svg for transitive deps support
-		if strings.HasSuffix(f, ".svg") {
-			rule := rule.NewRule("filegroup", base)
+		// TODO: See how we can make this optional, as surely not everyone needs transitive dep support for these files
+		if strings.HasSuffix(f, ".svg") || strings.HasSuffix(f, ".proto") {
+			rule := rule.NewRule("js_import", base)
 			rule.SetAttr("srcs", []string{f})
 			// TODO: Ideally we would not just apply public visibility
 			rule.SetAttr("visibility", []string{"//visibility:public"})
@@ -136,7 +136,7 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 			imports = append(imports, slice)
 		}
 		// Only generate js entries for known js files (.vue/.js) - can probably be extended
-		if !strings.HasSuffix(f, ".vue") && !strings.HasSuffix(f, ".js") || strings.HasSuffix(f, "k6.js") {
+		if (!strings.HasSuffix(f, ".vue") && !strings.HasSuffix(f, ".js")) || strings.HasSuffix(f, "k6.js") {
 			continue
 		}
 

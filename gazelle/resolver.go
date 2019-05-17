@@ -77,6 +77,10 @@ var (
 		"vm",
 		"zlib",
 	}
+	// TODO: Should possibly also be customisable
+	indexFiles = []string{
+		"index",
+	}
 )
 
 // Name returns the name of the language. This should be a prefix of the
@@ -148,7 +152,21 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 				l = label.New(from.Repo, path.Dir(normalisedImp), strings.TrimSuffix(path.Base(normalisedImp), filepath.Ext(normalisedImp)))
 				depSet[l.String()] = true
 			} else if !isBuiltinModule {
-				log.Printf("Import %v for %s not found.\n", imp, from.Abs(from.Repo, from.Pkg).String())
+				// Now we need to check if the import is a directory "shortcut" import, i.e. path/to/dir -> path/to/dir/index.js/.vue
+				found := false
+				for _, indexFile := range indexFiles {
+					indexImport := path.Join(normalisedImp, indexFile)
+					l, err := resolveWithIndex(ix, indexImport, from)
+					if err == nil {
+						found = true
+						l = l.Rel(from.Repo, from.Pkg)
+						depSet[l.String()] = true
+						break
+					}
+				}
+				if !found {
+					log.Printf("Import %v for %s not found.\n", imp, from.Abs(from.Repo, from.Pkg).String())
+				}
 			}
 		} else if err != nil {
 			log.Print(err)
