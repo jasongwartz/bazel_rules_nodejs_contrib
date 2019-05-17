@@ -77,7 +77,7 @@ _jest_node_test = rule(
 def jest_node_test(name, srcs, config, jest, **kwargs):
     data = kwargs.pop("data", []) + srcs + [config] + kwargs.pop("deps", []) + [jest]
     env = kwargs.pop("env", {
-        "NODE_ENV" "test",
+        "NODE_ENV": "test",
         "NODE_PATH": "$(pwd)/../global-yarn/node_modules",
     })
     tags = kwargs.pop("tags", [])
