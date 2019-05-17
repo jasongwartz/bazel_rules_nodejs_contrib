@@ -80,7 +80,7 @@ Build file generation is provided as a plugin for [gazelle](https://github.com/b
 To setup the gazlle plugin follow the installation instructions provided by the repository and additionally add the following to your root level `BUILD.bazel`:
 
 ```py
-load("@bazel_gazelle//:def.bzl", "gazelle", "gazelle_binary")
+load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
 
 # gazelle:exclude node_modules
 
