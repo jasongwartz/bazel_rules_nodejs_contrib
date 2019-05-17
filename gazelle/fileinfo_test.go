@@ -99,6 +99,14 @@ import {
 				Imports: []string{"date-fns"},
 			},
 		},
+		{
+			desc: "ignores incorrect imports",
+			name: "incorrect.js",
+			js: `@import "~mapbox.js/dist/mapbox.css";`,
+			want: FileInfo{
+				Imports: []string(nil),
+			},
+		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			dir, err := ioutil.TempDir(os.Getenv("TEST_TEMPDIR"), "TestProtoFileinfo")

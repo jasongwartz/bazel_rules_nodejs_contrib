@@ -65,6 +65,15 @@ func (s *jslang) Kinds() map[string]rule.KindInfo {
 				"config": true,
 			},
 		},
+		"filegroup": {
+			MatchAny: false,
+			NonEmptyAttrs: map[string]bool{
+				"srcs": true,
+			},
+			MergeableAttrs: map[string]bool{
+				"srcs": true,
+			},
+		},
 	}
 }
 
@@ -116,8 +125,18 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 	for _, f := range append(args.RegularFiles, args.GenFiles...) {
 		base = strings.ToLower(path.Base(f))
 		base = strings.TrimSuffix(base, filepath.Ext(base))
+		// TODO: Think if we want some kind of svg support - maybe we can also generate some kind of js_svg for transitive deps support
+		if strings.HasSuffix(f, ".svg") {
+			rule := rule.NewRule("filegroup", base)
+			rule.SetAttr("srcs", []string{f})
+			// TODO: Ideally we would not just apply public visibility
+			rule.SetAttr("visibility", []string{"//visibility:public"})
+			rules = append(rules, rule)
+			slice := []string{}
+			imports = append(imports, slice)
+		}
 		// Only generate js entries for known js files (.vue/.js) - can probably be extended
-		if !strings.HasSuffix(f, ".vue") && !strings.HasSuffix(f, ".js") {
+		if !strings.HasSuffix(f, ".vue") && !strings.HasSuffix(f, ".js") || strings.HasSuffix(f, "k6.js") {
 			continue
 		}
 

@@ -110,7 +110,7 @@ func buildJsRegexp() *regexp.Regexp {
 	// importStmt := `\bimport\s*(?P<import>` + strLit + `)\s*;`
 	charValue := ".+"
 	strLit := `'(?:` + charValue + `|")*'|"(?:` + charValue + `|')*"`
-	importStmt := `\bimport(?:.|\n)+?(?P<import>` + strLit + `).*`
+	importStmt := `\bimport (?:.|\n)+?(?P<import>` + strLit + `).*`
 
 	requireStmt := `\bconst .+ = require\((?P<require>` + strLit + `)\).*`
 

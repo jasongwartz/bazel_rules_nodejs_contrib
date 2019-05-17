@@ -7,9 +7,15 @@ Ecosia specific JS Bazel rules to be used with the NodeJS rules
 # These rules depend on running Node.js
 http_archive(
     name = "build_bazel_rules_nodejs",
+<<<<<<< HEAD
+    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.27.12.tar.gz"],
+    strip_prefix = "rules_nodejs-0.27.12",
+    sha256 = "25dbb063a8a1a2b279d55ba158992ad61eb5266c416c77eb82a7d33b4eac533d",
+=======
     urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.29.0.tar.gz"],
     strip_prefix = "rules_nodejs-0.29.0",
     sha256 = "86a5140bd330b45640e44d3f43b6d9f6c75ab560ac9b4aba1e5c83a18e3ee6b1",
+>>>>>>> master
 )
 
 http_archive(

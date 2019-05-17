@@ -31,7 +31,13 @@ var (
 	baseFiles   = []testtools.FileSpec{
 		{Path: "WORKSPACE"},
 		{Path: "jest.config.js"},
+		{Path: "hello_world/BUILD.bazel", Content:`
+exports_files(glob(["*.svg"]))
+`},
+		{Path: "hello_world/arrow-left.svg"},
+		{Path: "hello_world/close.svg"},
 		{Path: "hello_world/main.js", Content: `
+import path from "path";
 import {format} from "date-fns";
 
 import fonts from "~~/shared/fonts";
@@ -43,6 +49,8 @@ export default date;
 `},
 		{Path: "shared/fonts.js", Content: `
 export default "Helvetica";
+import ArrowLeft from '../hello_world/arrow-left.svg';
+import Close from '../hello_world/close.svg?inline';
 `},
 		{Path: "shared/colors.js", Content: `
 export default "Green";
@@ -101,6 +109,8 @@ js_library(
 		Path: "hello_world/BUILD.bazel",
 		Content: `load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "js_library")
 
+exports_files(glob(["*.svg"]))
+
 js_library(
     name = "main",
     srcs = ["main.js"],
@@ -138,6 +148,10 @@ js_library(
     name = "fonts",
     srcs = ["fonts.js"],
     visibility = ["//visibility:public"],
+    deps = [
+        "//hello_world:arrow-left.svg",
+        "//hello_world:close.svg",
+    ],
 )
 `,
 	}})

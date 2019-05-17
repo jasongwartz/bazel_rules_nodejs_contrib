@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"log"
 	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -35,6 +36,47 @@ var _ = fmt.Printf
 var (
 	skipImportError = errors.New("std import")
 	notFoundError   = errors.New("not found")
+	// builtinModule list taken from https://github.com/sindresorhus/builtin-modules/blob/master/builtin-modules.json
+	builtinModules = []string{
+		"assert",
+		"async_hooks",
+		"buffer",
+		"child_process",
+		"cluster",
+		"console",
+		"constants",
+		"crypto",
+		"dgram",
+		"dns",
+		"domain",
+		"events",
+		"fs",
+		"http",
+		"http2",
+		"https",
+		"inspector",
+		"module",
+		"net",
+		"os",
+		"path",
+		"perf_hooks",
+		"process",
+		"punycode",
+		"querystring",
+		"readline",
+		"repl",
+		"stream",
+		"string_decoder",
+		"timers",
+		"tls",
+		"trace_events",
+		"tty",
+		"url",
+		"util",
+		"v8",
+		"vm",
+		"zlib",
+	}
 )
 
 // Name returns the name of the language. This should be a prefix of the
@@ -83,22 +125,30 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 	r.DelAttr("deps")
 	depSet := make(map[string]bool)
 	for _, imp := range imports {
-		imp = normaliseImports(imp, ix, from)
-		l, err := resolveWithIndex(ix, imp, from)
+		normalisedImp := normaliseImports(imp, ix, from)
+		l, err := resolveWithIndex(ix, normalisedImp, from)
 		if err == skipImportError {
 			continue
 		} else if err == notFoundError {
-			// npm dependencies are currently not part of the index and would return this error
+			// npm dependencies are currently not part of the index and would return this error, so resolv them here without any index
+			// just based on some heuristics
 			// TODO: Find some way to customise the name of the npm repository. Or maybe this can be fixed somehow by indexing external deps?
-			if isNpmDependency(imp) {
+			sort.Strings(builtinModules)
+			i := sort.SearchStrings(builtinModules, imp)
+			isBuiltinModule := i < len(builtinModules) && builtinModules[i] == imp
+			if isNpmDependency(imp) && !isBuiltinModule {
 				s := strings.Split(imp, "/")
 				imp = s[0]
 				if strings.HasPrefix(imp, "@") {
 					imp += "/" + s[1]
 				}
 				depSet["@npm//"+imp] = true
-			} else {
-				log.Printf("Import %v not found.\n", imp)
+			} else if filepath.Ext(normalisedImp) == ".svg" || filepath.Ext(normalisedImp) == ".svg?inline" {
+				// In our vue components we also allow the import of svg files so we should handle them
+				l = label.New(from.Repo, path.Dir(normalisedImp), strings.TrimSuffix(path.Base(normalisedImp), filepath.Ext(normalisedImp)))
+				depSet[l.String()] = true
+			} else if !isBuiltinModule {
+				log.Printf("Import %v for %s not found.\n", imp, from.Abs(from.Repo, from.Pkg).String())
 			}
 		} else if err != nil {
 			log.Print(err)
@@ -149,6 +199,8 @@ func isNpmDependency(imp string) bool {
 
 // normaliseImports ensures that relative imports or alias imports can all resolve to the same file
 func normaliseImports(imp string, ix *resolve.RuleIndex, from label.Label) string {
+	// TODO: Handle directory imports, i.e. import/path/dir -> import/path/dir/index.js or import/path/dir/index.vue
+	// TODO: Should we also normalise imports that have an explicit '.js' file ending?
 	pkgDir := from.Pkg
 	// TODO: Right now we assume @/ and ~~ to simply be an alias for imports from the root, but that might not be true.
 	// Also need to support ~ aliases which is even more tricky
