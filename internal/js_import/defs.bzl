@@ -47,7 +47,7 @@ def _js_import(ctx):
             tags = ctx.attr.tags,
         ),
         providers = [
-            DefaultInfo(files = files = js.es5_sources),
+            DefaultInfo(files = js.es5_sources),
         ],
     )
 
