@@ -53,11 +53,11 @@ func jsFileinfo(dir, name string) FileInfo {
 		switch {
 		case match[importSubexpIndex] != nil:
 			imp := match[importSubexpIndex]
-			info.Imports = append(info.Imports, strings.ToLower(unquoteImportString(imp)))
+			info.Imports = append(info.Imports, strings.ToLower(unquoteImportString(imp, info.Path)))
 
 		case match[requireSubexpIndex] != nil:
 			imp := match[requireSubexpIndex]
-			info.Imports = append(info.Imports, strings.ToLower(unquoteImportString(imp)))
+			info.Imports = append(info.Imports, strings.ToLower(unquoteImportString(imp, info.Path)))
 
 		default:
 			// Comment matched. Nothing to extract.
@@ -70,7 +70,7 @@ func jsFileinfo(dir, name string) FileInfo {
 
 // unquoteImportString takes a string that has a complex quoting around it
 // and returns a string without the complex quoting.
-func unquoteImportString(q []byte) string {
+func unquoteImportString(q []byte, path string) string {
 	// Adjust quotes so that Unquote is happy. We need a double quoted string
 	// without unescaped double quote characters inside.
 	noQuotes := bytes.Split(q[1:len(q)-1], []byte{'"'})
@@ -90,7 +90,7 @@ func unquoteImportString(q []byte) string {
 
 	s, err := strconv.Unquote(string(q))
 	if err != nil {
-		log.Panicf("unquoting string literal %s from js: %v", q, err)
+		log.Panicf("unquoting string literal %s from js: %v. Path: %s", q, err, path)
 	}
 	return s
 }
