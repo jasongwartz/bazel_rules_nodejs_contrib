@@ -91,7 +91,7 @@ _jest_node_test = rule(
 
 def jest_node_test(name, srcs, config, jest, **kwargs):
     data = kwargs.pop("data", []) + srcs + [config] + kwargs.pop("deps", []) + [jest]
-    external_wksp_name = jest[1:jest.index("//")
+    external_wksp_name = jest[1:jest.index("//")]
     env = kwargs.pop("env", {
         "NODE_ENV": "test",
         "NODE_PATH": "$(pwd)/../%s/node_modules" % external_wksp_name,
@@ -121,5 +121,5 @@ def jest_node_test(name, srcs, config, jest, **kwargs):
         args = args,
         coverage_threshold = coverage_threshold,
         max_workers = max_workers,
-        visibility = visibility,
+        visibility = visibility
     )
