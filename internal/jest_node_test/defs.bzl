@@ -8,7 +8,10 @@ def _jest_node_test_impl(ctx):
         content = """
         #!/usr/bin/env bash
 
-        set -euo pipefail
+        echo "Whaaaa"
+        echo "$@"
+
+        set -euxo pipefail
 
         {env}
 
@@ -81,6 +84,7 @@ def jest_node_test(name, srcs, config, jest, **kwargs):
         "NODE_PATH": "$(pwd)/../global-yarn/node_modules",
     })
     tags = kwargs.pop("tags", [])
+    args = kwargs.pop("args", [])
     visibility = kwargs.pop("visibility", [])
 
     _nodejs_test(
@@ -99,5 +103,6 @@ def jest_node_test(name, srcs, config, jest, **kwargs):
         jest = "%s_test" % name,
         env = env,
         tags = tags,
+        args = args,
         visibility = visibility,
     )
