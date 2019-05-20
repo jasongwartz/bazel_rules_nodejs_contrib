@@ -94,7 +94,7 @@ def jest_node_test(name, srcs, config, jest, **kwargs):
     external_wksp_name = jest[1:jest.index("//")
     env = kwargs.pop("env", {
         "NODE_ENV": "test",
-        "NODE_PATH": "$(pwd)/../%s/node_modules" % external_wksp_name],
+        "NODE_PATH": "$(pwd)/../%s/node_modules" % external_wksp_name,
     })
     tags = kwargs.pop("tags", [])
     args = kwargs.pop("args", [])
