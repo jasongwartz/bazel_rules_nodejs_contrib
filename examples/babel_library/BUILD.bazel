@@ -4,5 +4,6 @@ babel_library(
     name = "babel_library",
     srcs = ["es6.js"],
     # Not ideal to have to set to True, but can make things on MacOS quite a bit faster
-    no_sandbox = True,
+    # Other than that it is worth trying sandboxfs
+    # no_sandbox = True,
 )

@@ -8,6 +8,9 @@ def _jest_node_test_impl(ctx):
     if ctx.attr.coverage_threshold:
         config_args += " --coverageThreshold " + ctx.attr.coverage_threshold
 
+    if ctx.attr.max_workers:
+        config_args += " --maxWorkers " + ctx.attr.max_workers
+
     ctx.actions.write(
         output = ctx.outputs.jest_runner,
         content = """
@@ -63,6 +66,9 @@ _jest_node_test = rule(
         "coverage_threshold": attr.string(
             mandatory = False,
         ),
+        "max_workers": attr.string(
+            mandatory = False,
+        ),
         "update_snapshots": attr.bool(
             default=False,
         ),
@@ -85,13 +91,15 @@ _jest_node_test = rule(
 
 def jest_node_test(name, srcs, config, jest, **kwargs):
     data = kwargs.pop("data", []) + srcs + [config] + kwargs.pop("deps", []) + [jest]
+    external_wksp_name = jest[1:jest.index("//")
     env = kwargs.pop("env", {
         "NODE_ENV": "test",
-        "NODE_PATH": "$(pwd)/../global-yarn/node_modules",
+        "NODE_PATH": "$(pwd)/../%s/node_modules" % external_wksp_name],
     })
     tags = kwargs.pop("tags", [])
     args = kwargs.pop("args", [])
     coverage_threshold = kwargs.pop("coverage_threshold", None)
+    max_workers = kwargs.pop("max_workers", None)
     visibility = kwargs.pop("visibility", [])
 
     _nodejs_test(
@@ -112,5 +120,6 @@ def jest_node_test(name, srcs, config, jest, **kwargs):
         tags = tags,
         args = args,
         coverage_threshold = coverage_threshold,
+        max_workers = max_workers,
         visibility = visibility,
     )
