@@ -8,10 +8,7 @@ def _jest_node_test_impl(ctx):
         content = """
         #!/usr/bin/env bash
 
-        echo "Whaaaa"
-        echo "$@"
-
-        set -euxo pipefail
+        set -euo pipefail
 
         {env}
 
