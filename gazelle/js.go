@@ -136,7 +136,7 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 			imports = append(imports, slice)
 		}
 		// Only generate js entries for known js files (.vue/.js) - can probably be extended
-		if (!strings.HasSuffix(f, ".vue") && !strings.HasSuffix(f, ".js")) || strings.HasSuffix(f, "k6.js") || strings.HasSuffix(f, "e2e.js") {
+		if (!strings.HasSuffix(f, ".vue") && !strings.HasSuffix(f, ".js")) || strings.HasSuffix(f, "k6.js") || strings.HasSuffix(f, "e2e.test.js") {
 			continue
 		}
 
