@@ -33,6 +33,15 @@ def _eslint_impl(ctx):
     else:
         args.extend(ctx.attr.paths)
     out_file = ctx.actions.declare_file(ctx.label.name + ".bash")
+
+    str_unqouted_env = " ".join([
+        "%s=%s" % (k, v)
+        for k, v in ctx.attr.env.items()
+    ])
+
+    if str_unqouted_env:
+        str_unqouted_env += " "
+
     ctx.actions.write(
         output = out_file,
         content = """#!/usr/bin/env bash
@@ -59,8 +68,8 @@ export RUNFILES_MANIFEST_FILE=$(pwd)/../MANIFEST
 echo "Running: eslint ${ARGS[@]}"
 
 cd $BUILD_WORKSPACE_DIRECTORY
-"$eslint_short_path" "${ARGS[@]}"
-""" % (ctx.attr.modified_files_only, shell.quote(ctx.executable.eslint.short_path), _array_literal(args)),
+%s"$eslint_short_path" "${ARGS[@]}"
+""" % (ctx.attr.modified_files_only, shell.quote(ctx.executable.eslint.short_path), _array_literal(args), str_unqouted_env),
         is_executable = True,
     )
 
@@ -104,6 +113,9 @@ eslint = rule(
             executable = True,
             cfg = "target",
         ),
+        "env": attr.string_dict(
+            mandatory = False,
+        ),
         "_bash": attr.label(
             cfg = "target",
             allow_files = True,
@@ -120,7 +132,9 @@ def eslint_macro(**kwargs):
         **kwargs: node_modules and eslint_binary_name is passed to the binary, everything else is
         passed through to `eslint`
     """
-    node_modules = kwargs.pop('node_modules', "@eslint_deps//:node_modules")
+    node_modules = kwargs.pop('node_modules', None)
+    config = kwargs["config"]
+    data = kwargs.pop('data', [])
     # Allow a custom binary name to keep reusing the same binary on mutltiple rule instantiations
     eslint_binary_name = kwargs.pop('eslint_binary_name', "%s_eslint" % kwargs['name'])
 
@@ -129,6 +143,7 @@ def eslint_macro(**kwargs):
             name = eslint_binary_name,
             entry_point = "eslint/bin/eslint.js",
             node_modules = node_modules,
+            data = data + [config],
             visibility = ["//visibility:public"],
         )
 
