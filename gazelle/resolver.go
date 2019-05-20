@@ -146,7 +146,7 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 				if strings.HasPrefix(imp, "@") {
 					imp += "/" + s[1]
 				}
-				depSet["@npm//"+imp] = true
+				depSet["@global-yarn//"+imp] = true
 			} else if filepath.Ext(normalisedImp) == ".svg" || filepath.Ext(normalisedImp) == ".svg?inline" {
 				// In our vue components we also allow the import of svg files so we should handle them
 				l = label.New(from.Repo, path.Dir(normalisedImp), strings.TrimSuffix(path.Base(normalisedImp), filepath.Ext(normalisedImp)))

@@ -3,6 +3,11 @@ load("@build_bazel_rules_nodejs//:defs.bzl", _nodejs_test = "nodejs_test")
 def _jest_node_test_impl(ctx):
     test_sources = ctx.files.srcs
 
+    config_args = "-c " + ctx.file.config.short_path
+
+    if ctx.attr.coverage_threshold:
+        config_args += " --coverageThreshold " + ctx.attr.coverage_threshold
+
     ctx.actions.write(
         output = ctx.outputs.jest_runner,
         content = """
@@ -24,8 +29,9 @@ def _jest_node_test_impl(ctx):
         """.format(
             env = "\n".join(["export %s=%s" % (key, ctx.attr.env[key]) for key in ctx.attr.env]) if ctx.attr.env else "",
             jest = ctx.files.jest[0].short_path,
-            config_args = "-c " + ctx.file.config.short_path,
+            config_args = config_args,
             run_tests_args = " ".join([f.short_path for f in test_sources]),
+            coverage_threshold = ctx.attr.coverage_threshold,
         ),
         is_executable = True,
     )
@@ -53,6 +59,9 @@ _jest_node_test = rule(
         ),
         "env": attr.string_dict(
             default={},
+        ),
+        "coverage_threshold": attr.string(
+            mandatory = False,
         ),
         "update_snapshots": attr.bool(
             default=False,
@@ -82,6 +91,7 @@ def jest_node_test(name, srcs, config, jest, **kwargs):
     })
     tags = kwargs.pop("tags", [])
     args = kwargs.pop("args", [])
+    coverage_threshold = kwargs.pop("coverage_threshold", None)
     visibility = kwargs.pop("visibility", [])
 
     _nodejs_test(
@@ -101,5 +111,6 @@ def jest_node_test(name, srcs, config, jest, **kwargs):
         env = env,
         tags = tags,
         args = args,
+        coverage_threshold = coverage_threshold,
         visibility = visibility,
     )
