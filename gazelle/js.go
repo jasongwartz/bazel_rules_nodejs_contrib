@@ -106,7 +106,7 @@ func (s *jslang) Loads() []rule.LoadInfo {
 func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResult {
 	// base is the last part of the path for this element. For example:
 	// "hello_world" => "hello_world"
-	// "foo/bar" => "bar"
+	// log.Println(args.OtherGen)
 	base := path.Base(args.Rel)
 	if base == "." {
 		//args.Rel will return an empty string if you're in the root of the repo.
@@ -120,6 +120,9 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 
 	rules := []*rule.Rule{}
 	imports := []interface{}{}
+	empty := []*rule.Rule{}
+	var jsFiles []string
+	var jsImportFiles []string
 
 	// var normalFiles []string
 	for _, f := range append(args.RegularFiles, args.GenFiles...) {
@@ -137,11 +140,13 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 		}
 		// Only generate js entries for known js files (.vue/.js) - can probably be extended
 		if (!strings.HasSuffix(f, ".vue") && !strings.HasSuffix(f, ".js")) || strings.HasSuffix(f, "k6.js") || strings.HasSuffix(f, "e2e.test.js") {
+			jsImportFiles = append(jsImportFiles, f)
 			continue
 		}
 
 		fileInfo := jsFileinfo(args.Dir, f)
 		imports = append(imports, fileInfo.Imports)
+		jsFiles = append(jsFiles, f)
 
 		if strings.HasSuffix(path.Base(f), ".test.js") && !strings.HasSuffix(path.Base(f), "e2e.test.js") {
 			rule := rule.NewRule("jest_node_test", base)
@@ -149,7 +154,7 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 			rule.SetAttr("entry_point", "jest-cli/bin/jest.js")
 			// This is currently not possible. See: https://github.com/bazelbuild/bazel-gazelle/issues/511
 			// rule.SetAttr("env", map[string]string{"NODE_ENV": "test"})
-			rule.SetAttr("jest", "@npm//jest/bin:jest")
+			rule.SetAttr("jest", "@global-yarn//jest/bin:jest")
 			rules = append(rules, rule)
 		} else {
 			rule := rule.NewRule("js_library", base)
@@ -160,6 +165,9 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 		}
 	}
 
+	empty = append(empty, generateEmpty(args.File, jsFiles, map[string]bool{"js_library": true, "jest_node_test": true})...)
+	empty = append(empty, generateEmpty(args.File, jsImportFiles, map[string]bool{"js_import": true})...)
+
 	return language.GenerateResult{
 		Gen:     rules,
 		Imports: imports,
@@ -168,8 +176,40 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 		// existing rules. If ther merged rules are empty, they will be deleted.
 		// In order to keep the BUILD file clean, if no file is included in the
 		// default rule for this directory, then remove it.
-		Empty: []*rule.Rule{},
+		Empty: empty,
 	}
+}
+
+// generateEmpty generates a list of jest_node_test, js_library and js_import rules that may be
+// deleted. This is generated from these existing rules with srcs lists that don't match any
+// static or generated files.
+func generateEmpty(f *rule.File, files []string, knownRuleKinds map[string]bool) []*rule.Rule {
+	if f == nil {
+		return nil
+	}
+	knownFiles := make(map[string]bool)
+	for _, f := range files {
+		knownFiles[f] = true
+	}
+	var empty []*rule.Rule
+outer:
+	for _, r := range f.Rules {
+		if !knownRuleKinds[r.Kind()] {
+			continue
+		}
+		srcs := r.AttrStrings("srcs")
+		if len(srcs) == 0 && r.Attr("srcs") != nil {
+			// srcs is not a string list; leave it alone
+			continue
+		}
+		for _, src := range r.AttrStrings("srcs") {
+			if knownFiles[src] {
+				continue outer
+			}
+		}
+		empty = append(empty, rule.NewRule(r.Kind(), r.Name()))
+	}
+	return empty
 }
 
 // Fix repairs deprecated usage of language-specific rules in f. This is
