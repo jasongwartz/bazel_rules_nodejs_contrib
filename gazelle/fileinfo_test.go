@@ -26,7 +26,7 @@ import (
 func TestJsRegexpGroupNames(t *testing.T) {
 	names := jsRe.SubexpNames()
 	nameMap := map[string]int{
-		"import": importSubexpIndex,
+		"import":  importSubexpIndex,
 		"require": requireSubexpIndex,
 	}
 	for name, index := range nameMap {
@@ -42,24 +42,24 @@ func TestJsRegexpGroupNames(t *testing.T) {
 func TestJsFileInfo(t *testing.T) {
 	for _, tc := range []struct {
 		desc, name, js string
-		want             FileInfo
+		want           FileInfo
 	}{
 		{
 			desc: "empty",
 			name: "empty^file.js",
-			js: "",
+			js:   "",
 			want: FileInfo{},
 		}, {
 			desc: "import single quote",
 			name: "single.js",
-			js: `import dateFns from 'date-fns';`,
+			js:   `import dateFns from 'date-fns';`,
 			want: FileInfo{
 				Imports: []string{"date-fns"},
 			},
 		}, {
 			desc: "import double quote",
 			name: "double.sass",
-			js: `import dateFns from "date-fns";`,
+			js:   `import dateFns from "date-fns";`,
 			want: FileInfo{
 				Imports: []string{"date-fns"},
 			},
@@ -74,7 +74,7 @@ import Puppy from '@/components/Puppy';`,
 		}, {
 			desc: "import depth",
 			name: "deep.sass",
-			js: `import package from "from/internal/package";`,
+			js:   `import package from "from/internal/package";`,
 			want: FileInfo{
 				Imports: []string{"from/internal/package"},
 			},
@@ -94,7 +94,7 @@ import {
 		{
 			desc: "simple require",
 			name: "require.js",
-			js: `const a = require("date-fns");`,
+			js:   `const a = require("date-fns");`,
 			want: FileInfo{
 				Imports: []string{"date-fns"},
 			},
@@ -102,9 +102,67 @@ import {
 		{
 			desc: "ignores incorrect imports",
 			name: "incorrect.js",
-			js: `@import "~mapbox.js/dist/mapbox.css";`,
+			js:   `@import "~mapbox.js/dist/mapbox.css";`,
 			want: FileInfo{
 				Imports: []string(nil),
+			},
+		},
+		{
+			desc: "ignores commented out imports",
+			name: "comment.js",
+			js: `
+    // takes ?inline out of the aliased import path, only if it's set
+    // e.g. ~/path/to/file.svg?inline -> ~/path/to/file.svg
+    '^~/(.+\\.svg)(\\?inline)?$': '<rootDir>$1',
+// const a = require("date-fns");
+// import {format} from 'date-fns';
+`,
+			want: FileInfo{
+				Imports: []string(nil),
+			},
+		},
+		{
+			desc: "full import",
+			name: "comment.js",
+			js: `import "mypolyfill";
+import "mypolyfill2";`,
+			want: FileInfo{
+				Imports: []string{"mypolyfill", "mypolyfill2"},
+			},
+		},
+		{
+			desc: "full require",
+			name: "full_require.js",
+			js:   `require("mypolyfill2");`,
+			want: FileInfo{
+				Imports: []string{"mypolyfill2"},
+			},
+		},
+		{
+			desc: "imports and full imports",
+			name: "mixed_imports.js",
+			js: `import Vuex, { Store } from 'vuex';
+import { createLocalVue, shallowMount } from '@vue/test-utils';
+
+import '~/plugins/intersection-observer-polyfill';
+import '~/plugins/intersect-directive';
+import ClaimsSection from './claims-section';
+`,
+			want: FileInfo{
+				Imports: []string{"./claims-section", "@vue/test-utils", "vuex", "~/plugins/intersect-directive", "~/plugins/intersection-observer-polyfill"},
+			},
+		},
+		{
+			desc: "dynamic require",
+			name: "dynamic_require.js",
+			js: `
+if (process.ENV.SHOULD_IMPORT) {
+    // const old = require('oldmapbox.js');
+    const leaflet = require('mapbox.js');
+}
+`,
+			want: FileInfo{
+				Imports: []string{"mapbox.js"},
 			},
 		},
 	} {
