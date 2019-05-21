@@ -62,13 +62,12 @@ eslint_short_path=$(readlink "$ESLINT_SHORT_PATH")
 # Set env variables node_launcher expects to be set from bazel
 export RUNFILES_DIR=$(pwd)/..
 export RUNFILES=$(pwd)/..
-export RUNFILES_MANIFEST_ONLY=1
 export RUNFILES_MANIFEST_FILE=$(pwd)/../MANIFEST
 
 echo "Running: eslint ${ARGS[@]}"
 
 cd $BUILD_WORKSPACE_DIRECTORY
-%s"$eslint_short_path" "${ARGS[@]}"
+exec env RUNFILES_MANIFEST_ONLY=1 %s"$eslint_short_path" "${ARGS[@]}"
 """ % (ctx.attr.modified_files_only, shell.quote(ctx.executable.eslint.short_path), _array_literal(args), str_unqouted_env),
         is_executable = True,
     )

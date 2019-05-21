@@ -155,6 +155,7 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 			// This is currently not possible. See: https://github.com/bazelbuild/bazel-gazelle/issues/511
 			// rule.SetAttr("env", map[string]string{"NODE_ENV": "test"})
 			rule.SetAttr("jest", "@npm//jest/bin:jest")
+			rule.SetAttr("max_workers", "1")
 			rules = append(rules, rule)
 		} else {
 			rule := rule.NewRule("js_library", base)
