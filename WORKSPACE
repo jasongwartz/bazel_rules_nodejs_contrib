@@ -25,9 +25,9 @@ http_archive(
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.29.0.tar.gz"],
-    strip_prefix = "rules_nodejs-0.29.0",
-    sha256 = "86a5140bd330b45640e44d3f43b6d9f6c75ab560ac9b4aba1e5c83a18e3ee6b1",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.30.1.tar.gz"],
+    strip_prefix = "rules_nodejs-0.30.1",
+    sha256 = "50fa0f31ca1deb1cffde4cfb546bc6d15d6cac39880f6ff3c883d66f98736f4b",
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories")

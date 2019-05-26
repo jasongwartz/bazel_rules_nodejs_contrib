@@ -618,7 +618,7 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
-"@bazel/babel@file:./internal/babel_library":
+"@bazel/babel@file:../../internal/babel_library":
   version "0.15.3"
   dependencies:
     "@babel/core" "^7.1.2"

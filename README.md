@@ -6,17 +6,17 @@ Ecosia specific JS Bazel rules to be used with the NodeJS rules
 ```py
 # These rules depend on running Node.js
 http_archive(
-    name = "build_bazel_rules_nodejs",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.29.0.tar.gz"],
-    strip_prefix = "rules_nodejs-0.29.0",
-    sha256 = "86a5140bd330b45640e44d3f43b6d9f6c75ab560ac9b4aba1e5c83a18e3ee6b1",
+    name = "com_github_bazelbuild_rules_nodejs",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.30.1.tar.gz"],
+    strip_prefix = "rules_nodejs-0.30.1",
+    sha256 = "50fa0f31ca1deb1cffde4cfb546bc6d15d6cac39880f6ff3c883d66f98736f4b",
 )
 
 http_archive(
     name = "ecosia_bazel_rules_nodejs_contrib",
-    urls = ["https://github.com/ecosia/bazel_rules_nodejs_contrib/archive/03d2aaa741998b86eaec9d9339e9e70f6b2814c8.tar.gz"],
-    strip_prefix = "bazel_rules_nodejs_contrib-03d2aaa741998b86eaec9d9339e9e70f6b2814c8",
-    sha256 = "0cfa7423a513d166ef11b70c94d928c3c797fa1e34cba8374817bd9d3781e66d",
+    urls = ["https://github.com/ecosia/bazel_rules_nodejs_contrib/archive/ced04589f3c0e7450f717ff5f43878e30a9ecd82.tar.gz"],
+    strip_prefix = "bazel_rules_nodejs_contrib-ced04589f3c0e7450f717ff5f43878e30a9ecd82",
+    sha256 = "0eb87e408e2e7c5dcc54e29495f900412662fe5dd4056989aa7bdae1b8ef797f",
 )
 
 
