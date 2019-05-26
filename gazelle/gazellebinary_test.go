@@ -31,7 +31,14 @@ var (
 	baseFiles   = []testtools.FileSpec{
 		{Path: "WORKSPACE"},
 		{Path: "jest.config.js"},
-		{Path: "hello_world/BUILD.bazel"},
+		{Path: "hello_world/BUILD.bazel", Content: `
+load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "js_library")
+
+js_library(
+    name = "old",
+    srcs = ["old.js"],
+)
+`},
 		{Path: "hello_world/arrow-left.svg"},
 		{Path: "hello_world/close.svg"},
 		{Path: "hello_world/index.js", Content: `
@@ -70,6 +77,47 @@ import date from '../hello_world/main';
 export default "Magic";
 `},
 	}
+	tsBaseFiles = []testtools.FileSpec{
+		{Path: "WORKSPACE"},
+		{Path: "hello_world/BUILD.bazel", Content: `
+load("@npm_bazel_typscript//:index.bzl", "ts_library")
+
+ts_library(
+    name = "old",
+    srcs = ["old.js"],
+)
+`},
+		{Path: "hello_world/index.ts", Content: `
+export default "index";
+`},
+		{Path: "hello_world/main.ts", Content: `
+import path from "path";
+import {format} from "date-fns";
+
+const date = format(new Date(2014, 0, 24), 'MM/DD/YYYY');
+console.log(date + fonts + colors);
+export default date;
+`},
+		{Path: "shared/fonts.ts", Content: `
+import Index from '../hello_world';
+
+export default "Helvetica";
+`},
+		{Path: "shared/colors.ts", Content: `
+export default "Green";
+`},
+		{Path: "shared/colors.spec.ts", Content: `
+import { something } from '@test/utils';
+
+import colors from './colors';
+import date from '../hello_world/main';
+
+// Imagine some tests here
+`},
+		{Path: "shared/index.ts", Content: `
+export default "Magic";
+`},
+	}
 )
 
 func TestMain(m *testing.M) {
@@ -94,7 +142,7 @@ func TestGazelleBinary(t *testing.T) {
 	dir, cleanup := testtools.CreateFiles(t, files)
 	defer cleanup()
 
-	cmd := exec.Command(*gazellePath, "-js_import_extensions", ".svg", "-alias_import_support")
+	cmd := exec.Command(*gazellePath, "-js_import_extensions", ".svg", "-alias_import_support", "-generate_js_tests")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Dir = dir
@@ -183,6 +231,73 @@ js_library(
 js_library(
     name = "index",
     srcs = ["index.js"],
+    visibility = ["//visibility:public"],
+)
+`,
+	}})
+}
+
+func TestGazelleBinaryTypescript(t *testing.T) {
+	files := append(tsBaseFiles)
+	dir, cleanup := testtools.CreateFiles(t, files)
+	defer cleanup()
+
+	cmd := exec.Command(*gazellePath)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Dir = dir
+	if err := cmd.Run(); err != nil {
+		t.Fatal(err)
+	}
+
+	testtools.CheckFiles(t, dir, []testtools.FileSpec{{
+		Path: "hello_world/BUILD.bazel",
+		Content: `load("@npm_bazel_typscript//:index.bzl", "ts_library")
+
+ts_library(
+    name = "index",
+    srcs = ["index.ts"],
+    visibility = ["//visibility:public"],
+)
+
+ts_library(
+    name = "main",
+    srcs = ["main.ts"],
+    visibility = ["//visibility:public"],
+    deps = ["@npm//date-fns"],
+)
+`,
+	}, {
+		Path: "shared/BUILD.bazel",
+		Content: `load("@npm_bazel_typscript//:index.bzl", "ts_library")
+
+ts_library(
+    name = "colors.spec",
+    srcs = ["colors.spec.ts"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":colors",
+        "//hello_world:main",
+        "@npm//@test/utils",
+    ],
+)
+
+ts_library(
+    name = "colors",
+    srcs = ["colors.ts"],
+    visibility = ["//visibility:public"],
+)
+
+ts_library(
+    name = "fonts",
+    srcs = ["fonts.ts"],
+    visibility = ["//visibility:public"],
+    deps = ["//hello_world:index"],
+)
+
+ts_library(
+    name = "index",
+    srcs = ["index.ts"],
     visibility = ["//visibility:public"],
 )
 `,

@@ -75,7 +75,7 @@ The default label for the `babel` binary is `@npm//@bazel/babel/bin:babel` as it
 
 ## Build file generation
 
-Build file generation is provided as a plugin for [gazelle](https://github.com/bazelbuild/bazel-gazelle) and still WIP and to a certain degree coupled to our internal js setup. It should not be difficult to extend / make it more generic though. It makes use of the `js_library` and `jest_node_test` provided in these rules.
+Build file generation is provided as a plugin for [gazelle](https://github.com/bazelbuild/bazel-gazelle) and still WIP and to a certain degree coupled to our internal js setup. It should not be difficult to extend / make it more generic though. It makes use of the `js_library` and `jest_node_test` provided in these rules. It also supports `ts_library` as well as an option to swap out `js_library` generation with `babel_library`.
 
 To setup the gazlle plugin follow the installation instructions provided by the repository and additionally add the following to your root level `BUILD.bazel`:
 
@@ -96,6 +96,7 @@ gazelle(
         "-js_import_extensions", # will generate js_import for .svg and .proto files
         ".svg,.proto",
         "-alias_import_support", # support resolving alias import statements, like "~/"
+        "-generate_js_tests", # enables jest_node_test generation for .test.js files
     ]
 )
 

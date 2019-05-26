@@ -43,6 +43,9 @@ type JsConfig struct {
 	// AliasImportSupport defines enables/disbles alias import support
 	// TODO: We want this probably more configurable once it is not hardcode anymore.
 	AliasImportSupport bool
+
+	// GenerateTests decides if jest_node_test rules will be generated or not.
+	GenerateTests bool
 }
 
 // GetJsConfig returns the js language configuration. If the js
@@ -100,6 +103,7 @@ func (s *jslang) RegisterFlags(fs *flag.FlagSet, cmd string, c *config.Config) {
 	fs.Var(&stringArrayFlag{&js.JsImportExtenstions}, "js_import_extensions", "A comma separated list of file extensions that js_import will be generated for. Defaults to no generation.")
 	fs.StringVar(&js.NpmWorkspaceName, "npm_workspace_name", "npm", "option to change the name of the external workspace where npm/yarn is installing its packages to")
 	fs.BoolVar(&js.AliasImportSupport, "alias_import_support", false, "Enables or disables alias import support, such as imports starting with ~, etc.")
+	fs.BoolVar(&js.GenerateTests, "generate_js_tests", false, "Enables or disables generation of jest_node_test rules for .test.js files.")
 }
 
 // CheckFlags validates the configuration after command line flags are parsed.

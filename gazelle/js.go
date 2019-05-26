@@ -76,6 +76,16 @@ func (s *jslang) Kinds() map[string]rule.KindInfo {
 				"srcs": true,
 			},
 		},
+		"ts_library": {
+			MatchAny: false,
+			NonEmptyAttrs: map[string]bool{
+				"srcs": true,
+			},
+			MergeableAttrs: map[string]bool{
+				"srcs": true,
+			},
+			ResolveAttrs: map[string]bool{"deps": true},
+		},
 	}
 }
 
@@ -87,6 +97,10 @@ func (s *jslang) Loads() []rule.LoadInfo {
 		{
 			Name:    "@ecosia_bazel_rules_nodejs_contrib//:defs.bzl",
 			Symbols: []string{"js_library", "jest_node_test", "js_import", "babel_library"},
+		},
+		{
+			Name:    "@npm_bazel_typscript//:index.bzl",
+			Symbols: []string{"ts_library"},
 		},
 	}
 }
@@ -151,7 +165,10 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 			imports = append(imports, slice)
 		}
 		// Only generate js entries for known js files (.vue/.js) - can probably be extended
-		if (!strings.HasSuffix(f, ".vue") && !strings.HasSuffix(f, ".js")) || strings.HasSuffix(f, "k6.js") || strings.HasSuffix(f, "e2e.test.js") {
+		if (!strings.HasSuffix(f, ".vue") && !strings.HasSuffix(f, ".js") && !strings.HasSuffix(f, ".ts")) ||
+			strings.HasSuffix(f, "k6.js") ||
+			strings.HasSuffix(f, "e2e.test.js") ||
+			(!js.GenerateTests && strings.HasSuffix(f, ".test.js")) {
 			jsImportFiles = append(jsImportFiles, f)
 			continue
 		}
@@ -160,7 +177,7 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 		imports = append(imports, fileInfo.Imports)
 		jsFiles = append(jsFiles, f)
 
-		if strings.HasSuffix(path.Base(f), ".test.js") && !strings.HasSuffix(path.Base(f), "e2e.test.js") {
+		if strings.HasSuffix(f, ".test.js") {
 			rule := rule.NewRule("jest_node_test", base)
 			rule.SetAttr("srcs", []string{f})
 			rule.SetAttr("entry_point", "jest-cli/bin/jest.js")
@@ -168,6 +185,12 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 			// rule.SetAttr("env", map[string]string{"NODE_ENV": "test"})
 			rule.SetAttr("jest", "@"+js.NpmWorkspaceName+"//jest/bin:jest")
 			rule.SetAttr("max_workers", "1")
+			rules = append(rules, rule)
+		} else if strings.HasSuffix(f, ".ts") {
+			rule := rule.NewRule("ts_library", base)
+			rule.SetAttr("srcs", []string{f})
+			// TODO: Ideally we would not just apply public visibility
+			rule.SetAttr("visibility", []string{"//visibility:public"})
 			rules = append(rules, rule)
 		} else {
 			rule := rule.NewRule(js.JsLibrary.String(), base)
@@ -178,7 +201,7 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 		}
 	}
 
-	empty = append(empty, generateEmpty(args.File, jsFiles, map[string]bool{js.JsLibrary.String(): true, "jest_node_test": true})...)
+	empty = append(empty, generateEmpty(args.File, jsFiles, map[string]bool{js.JsLibrary.String(): true, "jest_node_test": true, "ts_library": true})...)
 
 	if len(js.JsImportExtenstions) > 0 {
 		empty = append(empty, generateEmpty(args.File, jsImportFiles, map[string]bool{"js_import": true})...)
