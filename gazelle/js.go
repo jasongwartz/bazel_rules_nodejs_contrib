@@ -30,6 +30,8 @@ import (
 
 var _ = fmt.Printf
 
+const extName = "js"
+
 type jslang struct{}
 
 // NewLanguage returns an instace of the Gazelle plugin for rules_sass.
@@ -84,9 +86,18 @@ func (s *jslang) Loads() []rule.LoadInfo {
 	return []rule.LoadInfo{
 		{
 			Name:    "@ecosia_bazel_rules_nodejs_contrib//:defs.bzl",
-			Symbols: []string{"js_library", "jest_node_test", "js_import"},
+			Symbols: []string{"js_library", "jest_node_test", "js_import", "babel_library"},
 		},
 	}
+}
+
+func containsSuffix(suffixes []string, x string) bool {
+	for _, suffix := range suffixes {
+		if strings.HasSuffix(x, suffix) {
+			return true
+		}
+	}
+	return false
 }
 
 // GenerateRules extracts build metadata from source files in a directory.
@@ -104,6 +115,8 @@ func (s *jslang) Loads() []rule.LoadInfo {
 // Any non-fatal errors this function encounters should be logged using
 // log.Print.
 func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResult {
+	c := args.Config
+	js := GetJsConfig(c)
 	// base is the last part of the path for this element. For example:
 	// "hello_world" => "hello_world"
 	// log.Println(args.OtherGen)
@@ -128,8 +141,7 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 	for _, f := range append(args.RegularFiles, args.GenFiles...) {
 		base = strings.ToLower(path.Base(f))
 		base = strings.TrimSuffix(base, filepath.Ext(base))
-		// TODO: See how we can make this optional, as surely not everyone needs transitive dep support for these files
-		if strings.HasSuffix(f, ".svg") || strings.HasSuffix(f, ".proto") {
+		if containsSuffix(js.JsImportExtenstions, f) {
 			rule := rule.NewRule("js_import", base)
 			rule.SetAttr("srcs", []string{f})
 			// TODO: Ideally we would not just apply public visibility
@@ -154,11 +166,11 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 			rule.SetAttr("entry_point", "jest-cli/bin/jest.js")
 			// This is currently not possible. See: https://github.com/bazelbuild/bazel-gazelle/issues/511
 			// rule.SetAttr("env", map[string]string{"NODE_ENV": "test"})
-			rule.SetAttr("jest", "@npm//jest/bin:jest")
+			rule.SetAttr("jest", "@"+js.NpmWorkspaceName+"//jest/bin:jest")
 			rule.SetAttr("max_workers", "1")
 			rules = append(rules, rule)
 		} else {
-			rule := rule.NewRule("js_library", base)
+			rule := rule.NewRule(js.JsLibrary.String(), base)
 			rule.SetAttr("srcs", []string{f})
 			// TODO: Ideally we would not just apply public visibility
 			rule.SetAttr("visibility", []string{"//visibility:public"})
@@ -166,8 +178,11 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 		}
 	}
 
-	empty = append(empty, generateEmpty(args.File, jsFiles, map[string]bool{"js_library": true, "jest_node_test": true})...)
-	empty = append(empty, generateEmpty(args.File, jsImportFiles, map[string]bool{"js_import": true})...)
+	empty = append(empty, generateEmpty(args.File, jsFiles, map[string]bool{js.JsLibrary.String(): true, "jest_node_test": true})...)
+
+	if len(js.JsImportExtenstions) > 0 {
+		empty = append(empty, generateEmpty(args.File, jsImportFiles, map[string]bool{"js_import": true})...)
+	}
 
 	return language.GenerateResult{
 		Gen:     rules,

@@ -126,10 +126,11 @@ func (s *jslang) Embeds(r *rule.Rule, from label.Label) []label.Label {
 // import according to language-specific rules and heuristics.
 func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.RemoteCache, r *rule.Rule, importsRaw interface{}, from label.Label) {
 	imports := importsRaw.([]string)
+	js := GetJsConfig(c)
 	r.DelAttr("deps")
 	depSet := make(map[string]bool)
 	for _, imp := range imports {
-		normalisedImp := normaliseImports(imp, ix, from)
+		normalisedImp := normaliseImports(imp, ix, from, js.AliasImportSupport)
 		l, err := resolveWithIndex(ix, normalisedImp, from)
 		if err == skipImportError {
 			continue
@@ -146,7 +147,7 @@ func (s *jslang) Resolve(c *config.Config, ix *resolve.RuleIndex, rc *repo.Remot
 				if strings.HasPrefix(imp, "@") {
 					imp += "/" + s[1]
 				}
-				depSet["@npm//"+imp] = true
+				depSet["@"+js.NpmWorkspaceName+"//"+imp] = true
 			} else if filepath.Ext(normalisedImp) == ".svg" || filepath.Ext(normalisedImp) == ".svg?inline" {
 				// In our vue components we also allow the import of svg files so we should handle them
 				l = label.New(from.Repo, path.Dir(normalisedImp), strings.TrimSuffix(path.Base(normalisedImp), filepath.Ext(normalisedImp)))
@@ -216,21 +217,21 @@ func isNpmDependency(imp string) bool {
 }
 
 // normaliseImports ensures that relative imports or alias imports can all resolve to the same file
-func normaliseImports(imp string, ix *resolve.RuleIndex, from label.Label) string {
+func normaliseImports(imp string, ix *resolve.RuleIndex, from label.Label, aliasImportSupport bool) string {
 	// TODO: Handle directory imports, i.e. import/path/dir -> import/path/dir/index.js or import/path/dir/index.vue
 	// TODO: Should we also normalise imports that have an explicit '.js' file ending?
 	pkgDir := from.Pkg
 	// TODO: Right now we assume @/ and ~~ to simply be an alias for imports from the root, but that might not be true.
 	// Also need to support ~ aliases which is even more tricky
-	if strings.HasPrefix(imp, "@/") {
+	if aliasImportSupport && strings.HasPrefix(imp, "@/") {
 		return imp[2:]
 	}
 
-	if strings.HasPrefix(imp, "~~/") {
+	if aliasImportSupport && strings.HasPrefix(imp, "~~/") {
 		return imp[3:]
 	}
 
-	if strings.HasPrefix(imp, "~/") {
+	if aliasImportSupport && strings.HasPrefix(imp, "~/") {
 		// TODO: Figure out if we want to ignore any config files found at root
 		l, err := findJsConfig("nuxt", ix, from)
 		configFound := "nuxt"

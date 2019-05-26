@@ -94,7 +94,7 @@ func TestGazelleBinary(t *testing.T) {
 	dir, cleanup := testtools.CreateFiles(t, files)
 	defer cleanup()
 
-	cmd := exec.Command(*gazellePath)
+	cmd := exec.Command(*gazellePath, "-js_import_extensions", ".svg", "-alias_import_support")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Dir = dir

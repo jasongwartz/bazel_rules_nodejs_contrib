@@ -6,6 +6,7 @@ go_library(
     srcs = [
         "config.go",
         "fileinfo.go",
+        "flags.go",
         "js.go",
         "resolver.go",
     ],
@@ -33,7 +34,11 @@ go_test(
     embed = [":go_default_library"],
     importpath = "github.com/ecosia/bazel_rules_nodejs_contrib/gazelle",
     rundir = ".",
-    deps = ["@bazel_gazelle//testtools:go_default_library"],
+    deps = [
+        "@bazel_gazelle//label:go_default_library",
+        "@bazel_gazelle//resolve:go_default_library",
+        "@bazel_gazelle//testtools:go_default_library",
+    ],
 )
 
 gazelle_binary(

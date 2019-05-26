@@ -87,6 +87,16 @@ load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary
 gazelle(
     name = "gazelle",
     gazelle = ":gazelle_js",
+    # optionally to configure
+    extra_args = [
+        "-npm_workspace_name", # define a custom workspace name instead of @npm
+        "my-npm",
+        "-js_library", # will use babel_library instead of js_library
+        "babel_library",
+        "-js_import_extensions", # will generate js_import for .svg and .proto files
+        ".svg,.proto",
+        "-alias_import_support", # support resolving alias import statements, like "~/"
+    ]
 )
 
 gazelle_binary(
