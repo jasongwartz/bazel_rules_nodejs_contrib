@@ -72,7 +72,6 @@ node_jest_test = rule(
             default = Label(
                 "@ecosia_bazel_rules_nodejs_contrib//internal/nodejs_jest_test:jest-runner.js",
             ),
-            allow_files = True,
             allow_single_file = True,
         ),
     }),
@@ -113,7 +112,6 @@ node_jest = rule(
             default = Label(
                 "@ecosia_bazel_rules_nodejs_contrib//internal/nodejs_jest_test:jest-runner.js",
             ),
-            allow_files = True,
             allow_single_file = True,
         ),
     }),
