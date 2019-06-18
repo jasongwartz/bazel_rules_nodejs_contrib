@@ -47,7 +47,7 @@ vue_component = rule(
         "src": attr.label(
             doc = """Vue source files from the workspace.
             These can use ES2015 syntax and ES Modules (import/export)""",
-            single_file = True,
+            allow_single_file = True,
             allow_files = [".vue"]),
         "out": attr.string(
             default = "",
@@ -55,7 +55,7 @@ vue_component = rule(
         "_rollup_config_tmpl": attr.label(
             default = Label("//internal/vue_component:rollup.config.js"),
             allow_files = True,
-            single_file = True),
+            allow_single_file = True),
         "_rollup": attr.label(
             executable = True,
             cfg = "host",
