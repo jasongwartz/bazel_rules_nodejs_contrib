@@ -207,7 +207,7 @@ jest_node_test(
     name = "colors.test",
     srcs = ["colors.test.js"],
     config = "//:jest.config",
-    entry_point = "jest-cli/bin/jest.js",
+    entry_point = "@npm//:node_modules/jest-cli/bin/jest.js",
     jest = "@npm//jest/bin:jest",
     max_workers = "1",
     deps = [

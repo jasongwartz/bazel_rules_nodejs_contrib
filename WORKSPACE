@@ -12,7 +12,19 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-workspace(name = "ecosia_bazel_rules_nodejs_contrib")
+workspace(
+    name = "ecosia_bazel_rules_nodejs_contrib",
+    managed_directories = {
+        "@npm": ["examples/babel_library/node_modules"],
+        "@jest_node_test_example_deps": ["examples/jest_node_test/node_modules"],
+        "@nodejs_jest_test_example_deps": ["examples/nodejs_jest_test/node_modules"],
+        "@vue_component_deps": ["internal/vue_component/node_modules"],
+        "@toml_to_js_deps": ["examples/toml_to_js/node_modules"],
+        "@json_to_js_deps": ["internal/json_to_js/node_modules"],
+        "@eslint_deps": ["experimental/eslint/node_modules"],
+        "@nuxt_build": ["experimental/nuxt_build/node_modules"],
+    },
+)
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
@@ -25,9 +37,9 @@ http_archive(
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "50fa0f31ca1deb1cffde4cfb546bc6d15d6cac39880f6ff3c883d66f98736f4b",
-    strip_prefix = "rules_nodejs-0.30.1",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.30.1.tar.gz"],
+    sha256 = "0c78dd9ca95d0eedb790e11550c3ee6412b585f6d4eae2c2250d2d7511d43cd9",
+    strip_prefix = "rules_nodejs-0.32.2",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.32.2.tar.gz"],
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "yarn_install")
@@ -84,6 +96,10 @@ go_register_toolchains()
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
 
 gazelle_dependencies()
+
+load("//examples/jest_node_test:deps.bzl", "jest_node_test_example_dependencies")
+
+jest_node_test_example_dependencies()
 
 load("//examples/nodejs_jest_test:deps.bzl", "nodejs_jest_test_example_dependencies")
 

@@ -9,5 +9,8 @@
         "sass-loader": "^7.1.0",
         "node-sass": "^4.9.3",
         "babel-loader": "^7.1.5"
+    },
+    "devDependencies": {
+        "@bazel/hide-bazel-files": "0.32.2"
     }
 }

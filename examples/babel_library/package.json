@@ -1,5 +1,6 @@
 {
   "devDependencies": {
-    "@bazel/babel": "file:../../internal/babel_library"
+    "@bazel/babel": "file:../../internal/babel_library",
+    "@bazel/hide-bazel-files": "0.32.2"
   }
 }

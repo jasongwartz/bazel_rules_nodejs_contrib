@@ -14,5 +14,8 @@
         "@babel/core": "^7.1.2",
         "@babel/preset-env": "^7.1.0",
         "commander": "^2.19.0"
+    },
+    "devDependencies": {
+        "@bazel/hide-bazel-files": "0.32.2"
     }
 }

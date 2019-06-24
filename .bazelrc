@@ -1,1 +1,7 @@
 test --test_verbose_timeout_warnings --test_summary=detailed --test_output=all
+
+# Turn on the "Managed Directories" feature.
+# This allows Bazel to share the same node_modules directory with other tools
+# See https://docs.bazel.build/versions/master/command-line-reference.html#flag--experimental_allow_incremental_repository_updates
+build --experimental_allow_incremental_repository_updates
+query --experimental_allow_incremental_repository_updates

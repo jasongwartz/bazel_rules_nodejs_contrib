@@ -6,5 +6,8 @@
         "commander": "^2.15.1",
         "mkdirp": "^0.5.1",
         "toml-j0.4": "^1.1.1"
+    },
+    "devDependencies": {
+        "@bazel/hide-bazel-files": "0.32.2"
     }
 }

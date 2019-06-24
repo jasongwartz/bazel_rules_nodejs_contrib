@@ -1,0 +1,26 @@
+load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "vue_component")
+load("@ecosia_bazel_rules_nodejs_contrib//examples/jest_node_test:jest.bzl", "jest_node_test")
+
+vue_component(
+    name = "component",
+    src = "component.vue",
+    out = "component",
+)
+
+jest_node_test(
+    name = "component_test",
+    srcs = ["component.test.js"],
+    deps = [
+        ":component",
+    ],
+    tags = ["ibazel_notify_changes"],
+)
+
+jest_node_test(
+    name = "sum_test",
+    srcs = ["sum.test.js"],
+    deps = [
+        "sum.js",
+    ],
+    tags = ["ibazel_notify_changes"],
+)

@@ -12,15 +12,15 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-package(default_visibility = ["//visibility:public"])
-
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+package(default_visibility = ["//visibility:public"])
 
 nodejs_binary(
     name = "json_to_js",
     data = [
         "parser.js",
     ],
-    entry_point = "ecosia_bazel_rules_nodejs_contrib/internal/json_to_js/parser.js",
+    entry_point = ":parser.js",
     node_modules = "@json_to_js_deps//:node_modules",
 )

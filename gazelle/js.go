@@ -180,7 +180,7 @@ func (s *jslang) GenerateRules(args language.GenerateArgs) language.GenerateResu
 		if strings.HasSuffix(f, ".test.js") {
 			rule := rule.NewRule("jest_node_test", base)
 			rule.SetAttr("srcs", []string{f})
-			rule.SetAttr("entry_point", "jest-cli/bin/jest.js")
+			rule.SetAttr("entry_point", "@"+js.NpmWorkspaceName+"//:node_modules/jest-cli/bin/jest.js")
 			// This is currently not possible. See: https://github.com/bazelbuild/bazel-gazelle/issues/511
 			// rule.SetAttr("env", map[string]string{"NODE_ENV": "test"})
 			rule.SetAttr("jest", "@"+js.NpmWorkspaceName+"//jest/bin:jest")
