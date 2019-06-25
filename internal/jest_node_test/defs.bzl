@@ -3,7 +3,7 @@ load("@build_bazel_rules_nodejs//:defs.bzl", _nodejs_test = "nodejs_test")
 def _jest_node_test_impl(ctx):
     test_sources = ctx.files.srcs
 
-    config_args = "-c " + ctx.file.config.short_path
+    config_args = "--no-watchman -c " + ctx.file.config.short_path
 
     if ctx.attr.coverage_threshold:
         config_args += " --coverageThreshold " + ctx.attr.coverage_threshold
@@ -46,22 +46,21 @@ def _jest_node_test_impl(ctx):
             transitive_files = depset([], transitive = [transitive_depsets]),
         ),
         executable = ctx.outputs.jest_runner,
-      )]
-
+    )]
 
 _jest_node_test = rule(
     _jest_node_test_impl,
-    attrs={
+    attrs = {
         "srcs": attr.label_list(
             doc = """Test source files""",
-            allow_files=True,
+            allow_files = True,
         ),
         "jest_env": attr.string(
-            default="jsdom",
-            values=["node", "jsdom"]
+            default = "jsdom",
+            values = ["node", "jsdom"],
         ),
         "env": attr.string_dict(
-            default={},
+            default = {},
         ),
         "coverage_threshold": attr.string(
             mandatory = False,
@@ -70,7 +69,7 @@ _jest_node_test = rule(
             mandatory = False,
         ),
         "update_snapshots": attr.bool(
-            default=False,
+            default = False,
         ),
         "config": attr.label(
             doc = """jest config file""",
@@ -78,13 +77,13 @@ _jest_node_test = rule(
             mandatory = False,
         ),
         "jest": attr.label(
-            mandatory=True,
-            allow_files=True,
+            mandatory = True,
+            allow_files = True,
         ),
     },
-    test=True,
+    test = True,
     executable = True,
-    outputs={
+    outputs = {
         "jest_runner": "%{name}.sh",
     },
 )
@@ -121,5 +120,5 @@ def jest_node_test(name, srcs, config, jest, **kwargs):
         args = args,
         coverage_threshold = coverage_threshold,
         max_workers = max_workers,
-        visibility = visibility
+        visibility = visibility,
     )
