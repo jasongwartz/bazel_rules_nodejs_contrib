@@ -1,17 +1,34 @@
-load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "vue_component")
+load("@ecosia_bazel_rules_nodejs_contrib//:defs.bzl", "vue_component", "babel_library")
 load("@ecosia_bazel_rules_nodejs_contrib//examples/jest_node_test:jest.bzl", "jest_node_test")
+
+# TODO: Make the whole interoperability of vue_component, babel_library and jest_node_test nicer.
+# It is a bit confiusing where to add deps, what needs to wrapped in a babel_library etc.
+# Should be all more developer friendly
+# Also the sourcemap story has to be improved. Errors in jest_node_test do not look nice right now.
 
 vue_component(
     name = "component",
     src = "component.vue",
-    out = "component",
 )
+
+babel_library(
+    name = "config",
+    srcs = ["config.js"],
+)
+
+babel_library(
+    name = "component_test_babel",
+    srcs = ["component.test.js"],
+)
+
 
 jest_node_test(
     name = "component_test",
-    srcs = ["component.test.js"],
+    srcs = [":component_test_babel"],
     deps = [
         ":component",
+        ":config",
+        "@jest_node_test_example_deps//@vue/test-utils",
     ],
     tags = ["ibazel_notify_changes"],
 )

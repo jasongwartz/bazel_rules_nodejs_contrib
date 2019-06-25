@@ -1,6 +1,14 @@
-// import Component from './component';
-const Component = require('./component');
+import { shallowMount } from '@vue/test-utils'
+import Component from './component.vue'
 
-test('component test', () => {
-  expect(Component).toBe(Component);
+describe('Component', () => {
+  it('renders a div', () => {
+    const wrapper = shallowMount(Component)
+    expect(wrapper.contains('div')).toBe(true)
+  })
+
+  it('prints correctly', () => {
+    const wrapper = shallowMount(Component)
+    expect(wrapper.vm.print()).toBe("Hello Vue3")
+  })
 });

@@ -3,12 +3,14 @@
 </template>
 
 <script>
-// import { name } from './config';
+import name from './config';
+
+const fn = (str) => str;
 
 export default {
     methods: {
         print() {
-            return `Hello Vue`;
+          return fn(`${name}`);
         },
     }
 };

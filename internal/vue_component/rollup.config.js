@@ -31,7 +31,7 @@ export default {
         // TODO: Figure out if we could need format es here
         format: 'cjs',
         strict: false,
-        interop: false
+        interop: true
     },
     external: (id) => {
         const ext = (id !== input) && (!id.includes(`${path.basename(input)}?rollup-plugin-vue=script.js`));

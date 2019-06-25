@@ -1,4 +1,4 @@
-var env_preset = require('@babel/preset-env')
+const envPreset = require('@babel/preset-env');
 
 const babelConfig = {
   moduleIds: true,
@@ -20,7 +20,7 @@ const babelConfig = {
       return moduleId
     }
   },
-  presets: [[env_preset, {modules: 'umd'}]],
+  presets: [[envPreset, {modules: 'umd'}]],
 };
 
 module.exports = babelConfig;

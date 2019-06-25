@@ -55,7 +55,9 @@ node_repositories(
 
 load("//:defs.bzl", "node_contrib_repositories")
 
-node_contrib_repositories()
+node_contrib_repositories(
+    symlink_node_modules = True,
+)
 
 yarn_install(
     name = "npm",

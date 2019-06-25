@@ -20,4 +20,16 @@ def jest_node_test_example_dependencies():
         package_json = "@ecosia_bazel_rules_nodejs_contrib//examples/jest_node_test:package.json",
         yarn_lock = "@ecosia_bazel_rules_nodejs_contrib//examples/jest_node_test:yarn.lock",
         exclude_packages = [],
+        quiet = False,
+        data = [
+            "//:tools/patches/@jest+core+24.7.1.patch",
+            "//:tools/patches/@jest+transform+24.7.1.patch",
+            "//:tools/patches/babel-plugin-istanbul+5.1.2.patch",
+            "//:tools/patches/istanbul-api+2.1.5.patch",
+            "//:tools/patches/jest-cli+24.7.1.patch",
+            "//:tools/patches/jest-config+24.7.1.patch",
+            "//:tools/patches/jest-haste-map+24.7.1.patch",
+            "//:tools/patches/jest-resolve+24.7.1.patch",
+            "//:tools/patches/jest-runtime+24.7.1.patch",
+        ],
     )
