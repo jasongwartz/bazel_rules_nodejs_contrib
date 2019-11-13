@@ -6,7 +6,7 @@ Ecosia specific JS Bazel rules to be used with the NodeJS rules
 ```py
 # These rules depend on running Node.js
 http_archive(
-    name = "com_github_bazelbuild_rules_nodejs",
+    name = "build_bazel_rules_nodejs",
     urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.30.1.tar.gz"],
     strip_prefix = "rules_nodejs-0.30.1",
     sha256 = "50fa0f31ca1deb1cffde4cfb546bc6d15d6cac39880f6ff3c883d66f98736f4b",
