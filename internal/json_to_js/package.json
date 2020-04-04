@@ -2,7 +2,7 @@
     "license": "Apache-2.0",
     "dependencies": {
         "rollup-pluginutils": "^2.3.0",
-        "minimist": "^1.2.0",
+        "minimist": "^1.2.3",
         "mkdirp": "^0.5.1"
     },
     "devDependencies": {
